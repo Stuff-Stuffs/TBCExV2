@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "TBCExV2",
+  "version": "${version}",
+  "name": "TBCExV2",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/TBCExV2/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "io.github.stuff_stuffs.tbcexv2.client.TBCExV2Client"
+    ],
+    "main": [
+      "io.github.stuff_stuffs.tbcexv2.common.TBCExV2"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.13.3",
+    "fabric": "*",
+    "minecraft": "1.18.2"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "tbcexutil",
+  "version": "${version}",
+  "name": "TurnBasedCombatExperimentUtil",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "LGPL-3.0",
+  "icon": "assets/TurnBasedCombatExperiment/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "io.github.stuff_stuffs.tbcexutil.client.ClientUtil"
+    ],
+    "main": [
+      "io.github.stuff_stuffs.tbcexutil.common.TBCExUtil"
+    ]
+  },
+  "mixins": [
+    "TBCExUtil.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": ">=1.18"
+  }
+}
