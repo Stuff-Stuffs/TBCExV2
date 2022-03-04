@@ -3,7 +3,6 @@ package io.github.stuff_stuffs.tbcexcore.common.impl.battle.participant.effect;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.BattleParticipant;
-import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffect;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectType;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectTypes;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.*;
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class LevelStatEffect implements BattleParticipantEffect {
+public class LevelStatEffect implements LevelStatEffectView {
     public static final Codec<LevelStatEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.unboundedMap(BattleParticipantStats.REGISTRY.getCodec(), Codec.DOUBLE).fieldOf("basics").forGetter(effect -> effect.basics)).apply(instance, LevelStatEffect::new));
     private final Reference2DoubleMap<BattleParticipantStat> basics;
     private final List<BattleParticipantStatModifierHandle> handles;
@@ -28,7 +27,7 @@ public class LevelStatEffect implements BattleParticipantEffect {
     }
 
     @Override
-    public BattleParticipantEffectType<?> getType() {
+    public BattleParticipantEffectType<?, ?> getType() {
         return BattleParticipantEffectTypes.LEVEL_STAT_BATTLE_PARTICIPANT_EFFECT;
     }
 

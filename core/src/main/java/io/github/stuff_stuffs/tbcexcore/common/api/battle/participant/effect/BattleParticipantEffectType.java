@@ -12,14 +12,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BinaryOperator;
 
-public final class BattleParticipantEffectType<T extends BattleParticipantEffect> {
+public final class BattleParticipantEffectType<View extends BattleParticipantEffect, Mut extends View> {
     private final Text name;
-    private final Codec<T> codec;
-    private final RegistryEntry.Reference<BattleParticipantEffectType<?>> reference;
-    private final BinaryOperator<T> combiner;
-    private final Extractor<T> extractor;
+    private final Codec<Mut> codec;
+    private final RegistryEntry.Reference<BattleParticipantEffectType<?, ?>> reference;
+    private final BinaryOperator<Mut> combiner;
+    private final Extractor<Mut> extractor;
 
-    public BattleParticipantEffectType(final Text name, final Codec<T> codec, final BinaryOperator<T> combiner, final Extractor<T> extractor) {
+    public BattleParticipantEffectType(final Text name, final Codec<Mut> codec, final BinaryOperator<Mut> combiner, final Extractor<Mut> extractor) {
         this.name = name;
         this.codec = codec;
         this.combiner = combiner;
@@ -27,7 +27,7 @@ public final class BattleParticipantEffectType<T extends BattleParticipantEffect
         reference = BattleParticipantEffectTypes.REGISTRY.createEntry(this);
     }
 
-    public <K> DataResult<T> decode(final DynamicOps<K> ops, final K val) {
+    public <K> DataResult<Mut> decode(final DynamicOps<K> ops, final K val) {
         return codec.parse(ops, val);
     }
 
@@ -35,21 +35,21 @@ public final class BattleParticipantEffectType<T extends BattleParticipantEffect
         if (effect.getType() != this) {
             throw new TBCExException("Type mismatch");
         }
-        return codec.encodeStart(ops, (T) effect);
+        return codec.encodeStart(ops, (Mut) effect);
     }
 
-    public <E extends Entity & BattleParticipant> @Nullable T extract(final E entity) {
+    public <E extends Entity & BattleParticipant> @Nullable Mut extract(final E entity) {
         return extractor.extract(entity);
     }
 
-    public T combine(final BattleParticipantEffect first, final BattleParticipantEffect second) {
+    public View combine(final BattleParticipantEffect first, final BattleParticipantEffect second) {
         if (first.getType() != this || second.getType() != this) {
             throw new TBCExException("Type mismatch");
         }
-        return combiner.apply((T) first, (T) second);
+        return combiner.apply((Mut) first, (Mut) second);
     }
 
-    public Codec<T> getCodec() {
+    public Codec<Mut> getCodec() {
         return codec;
     }
 
@@ -57,7 +57,7 @@ public final class BattleParticipantEffectType<T extends BattleParticipantEffect
         return name;
     }
 
-    public RegistryEntry.Reference<BattleParticipantEffectType<?>> getReference() {
+    public RegistryEntry.Reference<BattleParticipantEffectType<?, ?>> getReference() {
         return reference;
     }
 

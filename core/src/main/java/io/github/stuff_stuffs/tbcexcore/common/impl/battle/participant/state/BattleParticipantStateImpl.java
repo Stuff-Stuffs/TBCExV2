@@ -2,38 +2,41 @@ package io.github.stuff_stuffs.tbcexcore.common.impl.battle.participant.state;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffect;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectContainer;
-import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectType;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantInventory;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.BattleParticipantStat;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.BattleParticipantStatContainer;
-import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantState;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantHandle;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantState;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantStateView;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.state.BattleState;
+import io.github.stuff_stuffs.tbcexcore.common.impl.battle.participant.effect.BattleParticipantEffectContainerImpl;
+import io.github.stuff_stuffs.tbcexcore.common.impl.battle.participant.inventory.BattleParticipantInventoryImpl;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
 import io.github.stuff_stuffs.tbcexutil.common.event.map.EventMapImpl;
 import io.github.stuff_stuffs.tbcexutil.common.event.map.MutEventMap;
-import org.jetbrains.annotations.Nullable;
 
 public class BattleParticipantStateImpl implements BattleParticipantState {
-    public static final Codec<BattleParticipantStateImpl> CODEC = RecordCodecBuilder.create(instance -> instance.group(BattleParticipantEffectContainer.CODEC.fieldOf("effects").forGetter(participant -> participant.effectContainer)).apply(instance, BattleParticipantStateImpl::new));
+    public static final Codec<BattleParticipantStateImpl> CODEC = RecordCodecBuilder.create(instance -> instance.group(BattleParticipantEffectContainerImpl.CODEC.fieldOf("effects").forGetter(participant -> participant.effectContainer), BattleParticipantInventoryImpl.CODEC.fieldOf("inventory").forGetter(participant -> participant.inventory)).apply(instance, BattleParticipantStateImpl::new));
     private final EventMapImpl eventMap;
-    private final BattleParticipantEffectContainer effectContainer;
+    private final BattleParticipantEffectContainerImpl effectContainer;
     private final BattleParticipantStatContainer statContainer;
+    private final BattleParticipantInventoryImpl inventory;
     private BattleParticipantHandle handle;
     private BattleState battleState;
 
     public BattleParticipantStateImpl() {
         eventMap = new EventMapImpl();
-        effectContainer = new BattleParticipantEffectContainer();
+        effectContainer = new BattleParticipantEffectContainerImpl();
         statContainer = new BattleParticipantStatContainer();
+        inventory = new BattleParticipantInventoryImpl();
     }
 
-    public BattleParticipantStateImpl(final BattleParticipantEffectContainer effectContainer) {
+    public BattleParticipantStateImpl(final BattleParticipantEffectContainerImpl effectContainer, final BattleParticipantInventoryImpl inventory) {
         eventMap = new EventMapImpl();
         this.effectContainer = effectContainer;
         statContainer = new BattleParticipantStatContainer();
+        this.inventory = inventory;
     }
 
     public void init(final BattleParticipantHandle handle, final BattleState state) {
@@ -65,13 +68,13 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
     }
 
     @Override
-    public double getStat(final BattleParticipantStat stat) {
-        return statContainer.getStat(stat);
+    public BattleParticipantInventory getInventory() {
+        return inventory;
     }
 
     @Override
-    public <T extends BattleParticipantEffect> @Nullable T getEffect(final BattleParticipantEffectType<T> type) {
-        return effectContainer.getEffect(type);
+    public double getStat(final BattleParticipantStat stat) {
+        return statContainer.getStat(stat);
     }
 
     @Override

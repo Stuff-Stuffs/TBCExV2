@@ -1,6 +1,7 @@
 package io.github.stuff_stuffs.tbcexcore.common.api.battle.state;
 
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleHandle;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.effect.BattleEffectContainerView;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantStateView;
 import io.github.stuff_stuffs.tbcexutil.common.event.AbstractEvent;
@@ -27,6 +28,8 @@ public interface BattleStateView {
     BattleParticipantStateView getParticipant(BattleParticipantHandle handle);
 
     BattleHandle getHandle();
+
+    BattleEffectContainerView getEffects();
 
     interface EventInitializer {
         <V, M> void initializeEvents(BiConsumer<EventKey<V, M>, BiFunction<Runnable, Runnable, ? extends AbstractEvent<V, M>>> consumer);

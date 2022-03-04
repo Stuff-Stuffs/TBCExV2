@@ -1,7 +1,7 @@
 package io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state;
 
-import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffect;
-import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectType;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectContainerView;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantInventoryView;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.BattleParticipantStat;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.state.BattleStateView;
 import io.github.stuff_stuffs.tbcexutil.common.event.AbstractEvent;
@@ -9,7 +9,6 @@ import io.github.stuff_stuffs.tbcexutil.common.event.EventKey;
 import io.github.stuff_stuffs.tbcexutil.common.event.map.EventMap;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -30,9 +29,11 @@ public interface BattleParticipantStateView {
 
     BattleStateView getBattleState();
 
-    double getStat(BattleParticipantStat stat);
+    BattleParticipantInventoryView getInventory();
 
-    <T extends BattleParticipantEffect> @Nullable T getEffect(BattleParticipantEffectType<T> type);
+    BattleParticipantEffectContainerView getEffectContainer();
+
+    double getStat(BattleParticipantStat stat);
 
     interface EventInitializer {
         <V, M> void initializeEvents(BiConsumer<EventKey<V, M>, BiFunction<Runnable, Runnable, ? extends AbstractEvent<V, M>>> consumer);

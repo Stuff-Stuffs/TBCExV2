@@ -3,12 +3,10 @@ package io.github.stuff_stuffs.tbcexcore.common.impl.battle.participant.effect;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.BattleParticipant;
-import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffect;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectType;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectTypes;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.*;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantState;
-import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExUtil;
 import it.unimi.dsi.fastutil.objects.Reference2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Reference2DoubleOpenHashMap;
@@ -18,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class RacialStatEffect implements BattleParticipantEffect {
+public class RacialStatEffect implements RacialStatEffectView {
     public static final Codec<RacialStatEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.unboundedMap(BattleParticipantStats.REGISTRY.getCodec(), Codec.DOUBLE).fieldOf("basics").forGetter(effect -> effect.basics)).apply(instance, RacialStatEffect::new));
     private final Reference2DoubleMap<BattleParticipantStat> basics;
     private final List<BattleParticipantStatModifierHandle> handles;
@@ -29,7 +27,7 @@ public class RacialStatEffect implements BattleParticipantEffect {
     }
 
     @Override
-    public BattleParticipantEffectType<?> getType() {
+    public BattleParticipantEffectType<?, ?> getType() {
         return BattleParticipantEffectTypes.RACIAL_STAT_BATTLE_PARTICIPANT_EFFECT;
     }
 

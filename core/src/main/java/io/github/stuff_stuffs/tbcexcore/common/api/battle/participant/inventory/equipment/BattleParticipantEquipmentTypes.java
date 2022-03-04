@@ -8,7 +8,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 
 public final class BattleParticipantEquipmentTypes {
-    public static final Registry<BattleParticipantEquipmentType<?>> REGISTRY = FabricRegistryBuilder.from(new SimpleRegistry<BattleParticipantEquipmentType<?>>(RegistryKey.ofRegistry(TBCExCore.createId("battle_equipment_type")), Lifecycle.stable(), BattleParticipantEquipmentType::getReference)).buildAndRegister();
+    public static final Registry<BattleParticipantEquipmentType<?>> REGISTRY = FabricRegistryBuilder.from(new SimpleRegistry<BattleParticipantEquipmentType<?>>(RegistryKey.ofRegistry(TBCExCore.createId("battle_participant_equipment_type")), Lifecycle.stable(), BattleParticipantEquipmentType::getReference)).buildAndRegister();
 
     public static void init() {
     }
