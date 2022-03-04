@@ -8,4 +8,8 @@ public final class TBCExUtil implements ModInitializer {
     public void onInitialize() {
         MovementTypes.init();
     }
+
+    public static <T> T unimplemented() {
+        throw new TBCExUnimplementedException();
+    }
 }

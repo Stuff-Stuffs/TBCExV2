@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import java.util.Map;
 
 public final class BattleParticipantStatContainer {
+    private static final BattleParticipantStatModifier.Phase[] PHASES = BattleParticipantStatModifier.Phase.values();
     private final Map<BattleParticipantStat, Container> containers;
 
     public BattleParticipantStatContainer() {
@@ -19,34 +20,42 @@ public final class BattleParticipantStatContainer {
         return containers.get(stat).compute();
     }
 
-    public BattleParticipantStatModifierHandle addModifier(final BattleParticipantStat stat, final BattleParticipantStatModifier modifier) {
-        return containers.get(stat).addModifier(modifier);
+    public BattleParticipantStatModifierHandle addModifier(final BattleParticipantStat stat, final BattleParticipantStatModifier modifier, final BattleParticipantStatModifier.Phase phase) {
+        return containers.get(stat).addModifier(modifier, phase);
     }
 
     static final class Container {
         private final BattleParticipantStat stat;
-        private final Reference2ObjectLinkedOpenHashMap<BattleParticipantStatModifierHandle, BattleParticipantStatModifier> modifiers;
+        private final Reference2ObjectLinkedOpenHashMap<BattleParticipantStatModifierHandle, BattleParticipantStatModifier>[] modifiers;
 
         private Container(final BattleParticipantStat stat) {
             this.stat = stat;
-            modifiers = new Reference2ObjectLinkedOpenHashMap<>();
+
+            modifiers = new Reference2ObjectLinkedOpenHashMap[PHASES.length];
+            for (int i = 0; i < PHASES.length; i++) {
+                modifiers[i] = new Reference2ObjectLinkedOpenHashMap<>();
+            }
         }
 
         void destroy(final BattleParticipantStatModifierHandle handle) {
-            modifiers.remove(handle);
+            for (final Reference2ObjectLinkedOpenHashMap<BattleParticipantStatModifierHandle, BattleParticipantStatModifier> map : modifiers) {
+                map.remove(handle);
+            }
         }
 
         public double compute() {
             double t = 0;
-            for (final BattleParticipantStatModifier modifier : modifiers.values()) {
-                t = modifier.modify(t, stat);
+            for (final Reference2ObjectLinkedOpenHashMap<BattleParticipantStatModifierHandle, BattleParticipantStatModifier> map : modifiers) {
+                for (final BattleParticipantStatModifier modifier : map.values()) {
+                    t = modifier.modify(t, stat);
+                }
             }
             return t;
         }
 
-        public BattleParticipantStatModifierHandle addModifier(final BattleParticipantStatModifier modifier) {
-            final BattleParticipantStatModifierHandle handle = new BattleParticipantStatModifierHandle(this, modifier);
-            modifiers.putAndMoveToLast(handle, modifier);
+        public BattleParticipantStatModifierHandle addModifier(final BattleParticipantStatModifier modifier, final BattleParticipantStatModifier.Phase phase) {
+            final BattleParticipantStatModifierHandle handle = new BattleParticipantStatModifierHandle(this);
+            modifiers[phase.ordinal()].putAndMoveToLast(handle, modifier);
             return handle;
         }
     }
