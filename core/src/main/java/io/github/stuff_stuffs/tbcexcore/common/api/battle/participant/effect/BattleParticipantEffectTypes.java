@@ -15,6 +15,11 @@ public final class BattleParticipantEffectTypes {
     public static final BattleParticipantEffectType<RacialStatEffect> RACIAL_STAT_BATTLE_PARTICIPANT_EFFECT = new BattleParticipantEffectType<>(new LiteralText("Racial"), RacialStatEffect.CODEC, RacialStatEffect::combine, RacialStatEffect::extract);
     public static final BattleParticipantEffectType<LevelStatEffect> LEVEL_STAT_BATTLE_PARTICIPANT_EFFECT = new BattleParticipantEffectType<>(new LiteralText("Level"), LevelStatEffect.CODEC, LevelStatEffect::combine, LevelStatEffect::extract);
 
+    public static void init() {
+        Registry.register(REGISTRY, TBCExCore.createId("racial"), RACIAL_STAT_BATTLE_PARTICIPANT_EFFECT);
+        Registry.register(REGISTRY, TBCExCore.createId("level"), LEVEL_STAT_BATTLE_PARTICIPANT_EFFECT);
+    }
+
     private BattleParticipantEffectTypes() {
     }
 }

@@ -3,11 +3,9 @@ package io.github.stuff_stuffs.tbcexcore.common.impl.battle.state;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleHandle;
-import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleWorld;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantState;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.state.BattleState;
-import io.github.stuff_stuffs.tbcexcore.common.api.battle.state.BattleStateView;
 import io.github.stuff_stuffs.tbcexcore.common.impl.battle.participant.state.BattleParticipantStateImpl;
 import io.github.stuff_stuffs.tbcexutil.common.CodecUtil;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
@@ -23,7 +21,6 @@ public class BattleStateImpl implements BattleState {
     private final Object2ReferenceLinkedOpenHashMap<BattleParticipantHandle, BattleParticipantStateImpl> participantStateByHandle;
     private boolean init = false;
     private BattleHandle handle;
-    private BattleWorld battleWorld;
 
     public BattleStateImpl() {
         participantStateByHandle = new Object2ReferenceLinkedOpenHashMap<>();
@@ -36,10 +33,8 @@ public class BattleStateImpl implements BattleState {
         }
     }
 
-    public void init(final BattleWorld battleWorld, final BattleHandle handle) {
+    public void init(final BattleHandle handle) {
         if (!init) {
-            BattleStateView.BATTLE_EVENT_INIT.invoker().initializeEvents(eventMap::register);
-            this.battleWorld = battleWorld;
             this.handle = handle;
             init = true;
         }
