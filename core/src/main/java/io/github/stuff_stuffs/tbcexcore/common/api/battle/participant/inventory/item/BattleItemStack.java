@@ -1,8 +1,11 @@
 package io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.item;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
 
 public final class BattleItemStack {
+    public static final Codec<BattleItemStack> CODEC = RecordCodecBuilder.create(instance -> instance.group(BattleItem.CODEC.fieldOf("item").forGetter(BattleItemStack::getItem), Codec.INT.fieldOf("count").forGetter(BattleItemStack::getCount)).apply(instance, BattleItemStack::new));
     private final BattleItem item;
     private final int count;
 

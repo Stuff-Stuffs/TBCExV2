@@ -12,4 +12,8 @@ public interface BattleParticipantInventory extends BattleParticipantInventoryVi
     @Nullable BattleItemStack take(BattleParticipantInventoryHandle handle, int amount);
 
     BattleParticipantInventoryHandle give(BattleItemStack stack);
+
+    boolean equip(BattleParticipantInventoryHandle handle, BattleParticipantEquipmentSlot slot);
+
+    boolean unequip(BattleParticipantEquipmentSlot slot);
 }

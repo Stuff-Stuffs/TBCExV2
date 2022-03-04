@@ -14,6 +14,10 @@ public final class BattleParticipantInventoryHandle {
         this.id = id;
     }
 
+    public BattleParticipantHandle getParent() {
+        return parent;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
