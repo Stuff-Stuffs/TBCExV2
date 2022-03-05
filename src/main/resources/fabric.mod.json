@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "TBCExV2",
+  "id": "tbcex_v2",
   "version": "${version}",
   "name": "TBCExV2",
   "description": "",
@@ -10,12 +10,6 @@
   "icon": "assets/TBCExV2/icon.png",
   "environment": "*",
   "entrypoints": {
-    "client": [
-      "io.github.stuff_stuffs.tbcexv2.client.TBCExV2Client"
-    ],
-    "main": [
-      "io.github.stuff_stuffs.tbcexv2.common.TBCExV2"
-    ]
   },
   "depends": {
     "fabricloader": ">=0.13.3",

@@ -59,6 +59,13 @@ allprojects {
         withSourcesJar()
     }
 }
+
+dependencies {
+    subprojects {
+        include project(path: project.getPath(), configuration: "namedElements")
+    }
+}
+
 jar {
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}" }

@@ -9,3 +9,5 @@ pluginManagement {
 }
 include 'util'
 include 'core'
+include 'content'
+include 'content:character'

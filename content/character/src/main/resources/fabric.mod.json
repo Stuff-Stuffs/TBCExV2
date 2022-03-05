@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "tbcex_util_v2",
+  "id": "tbcex_character_v2",
   "version": "${version}",
   "name": "TurnBasedCombatExperimentUtil",
   "description": "",
@@ -11,14 +11,13 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "io.github.stuff_stuffs.tbcexutil.client.ClientUtil"
+      "io.github.stuff_stuffs.tbcexcharacter.client.TBCExCharacterClient"
     ],
     "main": [
-      "io.github.stuff_stuffs.tbcexutil.common.TBCExUtil"
+      "io.github.stuff_stuffs.tbcexcharacter.common.TBCExCharacter"
     ]
   },
   "mixins": [
-    "TBCExUtil.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.11.3",

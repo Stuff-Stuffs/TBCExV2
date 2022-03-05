@@ -46,6 +46,7 @@ public class ClientBattleWorldImpl implements BattleWorld {
             LOGGER.error("Tried to get battle from wrong world!");
         } else {
             battles.put(handle.getId(), impl);
+            impl.init(handle);
         }
     }
 
