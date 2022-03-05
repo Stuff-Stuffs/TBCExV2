@@ -1,5 +1,6 @@
 package io.github.stuff_stuffs.tbcexcore.common;
 
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.BattleActionTypes;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.effect.BattleEffectTypes;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectTypes;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantEquipmentSlots;
@@ -20,6 +21,7 @@ public class TBCExCore implements ModInitializer {
         BattleParticipantEquipmentSlots.init();
         BattleParticipantEquipmentTypes.init();
         BattleEffectTypes.init();
+        BattleActionTypes.init();
     }
 
     public static Identifier createId(final String path) {

@@ -42,6 +42,9 @@ public class BattleStateImpl implements BattleState {
         if (!init) {
             this.handle = handle;
             init = true;
+            for (final Map.Entry<BattleParticipantHandle, BattleParticipantStateImpl> entry : participantStateByHandle.entrySet()) {
+                entry.getValue().init(entry.getKey(), this);
+            }
         }
     }
 
