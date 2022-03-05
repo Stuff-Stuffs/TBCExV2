@@ -1,17 +1,15 @@
 package io.github.stuff_stuffs.tbcexcore.common.impl.battle.world;
 
-import io.github.stuff_stuffs.tbcexcore.common.api.battle.Battle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleWorld;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.BattleAction;
 import io.github.stuff_stuffs.tbcexcore.common.impl.battle.BattleImpl;
+import io.github.stuff_stuffs.tbcexcore.common.impl.battle.BattleTimelineImpl;
 import io.github.stuff_stuffs.tbcexutil.common.CacheEvictionMap;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
 import io.netty.buffer.ByteBufOutputStream;
 import it.unimi.dsi.fastutil.longs.*;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.*;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -73,22 +71,41 @@ public class ServerBattleWorldImpl implements BattleWorld {
         evictionMap = new CacheEvictionMap<>(TIME_OUT);
     }
 
-    public void writeBattle(BattleHandle handle, PacketByteBuf buf) {
+    public void writeBattle(final BattleHandle handle, final PacketByteBuf buf, final int size) {
         if (!handle.getWorld().equals(worldKey)) {
             throw new TBCExException("Tried to get battle from wrong world!");
         }
         final BattleImpl battle = getBattle(handle);
-        try(ByteBufOutputStream stream = new ByteBufOutputStream(buf)) {
-            final Optional<NbtElement> result = BattleImpl.CODEC.encodeStart(NbtOps.INSTANCE, battle).result();
-            NbtCompound wrapper = new NbtCompound();
-            if(result.isPresent()) {
-                final NbtElement nbt = result.get();
-                wrapper.put("handle", BattleHandle.CODEC.encodeStart(NbtOps.INSTANCE, handle).result().orElseThrow(() -> new TBCExException("Error while serializing BattleHandle!")));
-                wrapper.put("data", nbt);
+        try (final ByteBufOutputStream stream = new ByteBufOutputStream(buf)) {
+            final NbtCompound wrapper = new NbtCompound();
+            wrapper.put("handle", BattleHandle.CODEC.encodeStart(NbtOps.INSTANCE, handle).result().orElseThrow(() -> new TBCExException("Error while serializing BattleHandle!")));
+            if (size == 0) {
+                final Optional<NbtElement> result = BattleImpl.CODEC.encodeStart(NbtOps.INSTANCE, battle).result();
+                if (result.isPresent()) {
+                    final NbtElement nbt = result.get();
+                    wrapper.put("data", nbt);
+                } else {
+                    throw new TBCExException("Error while serializing battle!");
+                }
+            } else {
+                final NbtList list = new NbtList();
+                final BattleTimelineImpl timeline = (BattleTimelineImpl) battle.getTimeline();
+                for (int i = size; i < timeline.getSize(); i++) {
+                    final BattleAction action = timeline.getAction(i);
+                    final NbtCompound actionWrapper = new NbtCompound();
+                    final Optional<NbtElement> result = BattleAction.CODEC.encodeStart(NbtOps.INSTANCE, action).result();
+                    if (result.isPresent()) {
+                        actionWrapper.put("data", result.get());
+                    } else {
+                        throw new TBCExException("Error while serializing battle action of type: " + action.getType());
+                    }
+                    list.add(actionWrapper);
+                }
+                wrapper.put("data", list);
             }
             NbtIo.writeCompressed(wrapper, stream);
             stream.flush();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new TBCExException("Error while writing battle to buffer!", e);
         }
     }

@@ -10,10 +10,11 @@ import net.minecraft.util.Identifier;
 public final class BattleUpdateRequestSender {
     public static final Identifier IDENTIFIER = TBCExCore.createId("battle_update_request");
 
-    public static void send(final BattleHandle handle) {
+    public static void send(final BattleHandle handle, final int currentSize) {
         final PacketByteBuf buf = PacketByteBufs.create();
         buf.writeIdentifier(handle.getWorld().getValue());
         buf.writeLong(handle.getId());
+        buf.writeInt(currentSize);
         ClientPlayNetworking.send(IDENTIFIER, buf);
     }
 

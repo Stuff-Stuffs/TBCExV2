@@ -28,13 +28,15 @@ public final class BattleUpdateRequestHandler {
     private static void receive(final MinecraftServer server, final ServerPlayerEntity player, final ServerPlayNetworkHandler serverPlayNetworkHandler, final PacketByteBuf buf, final PacketSender sender) {
         final Identifier worldId = buf.readIdentifier();
         final long id = buf.readLong();
+        final int size = buf.readInt();
         final RegistryKey<World> worldKey = RegistryKey.of(Registry.WORLD_KEY, worldId);
         final BattleHandle handle = new BattleHandle(worldKey, id);
         server.execute(() -> {
             final ServerWorld world = server.getWorld(worldKey);
             final ServerBattleWorldImpl battleWorld = (ServerBattleWorldImpl) ((BattleWorldHolder) world).tbcex$getBattleWorld();
             final PacketByteBuf send = PacketByteBufs.create();
-            battleWorld.writeBattle(handle, send);
+            send.writeInt(size);
+            battleWorld.writeBattle(handle, send, size);
             sender.sendPacket(UPDATE_SEND_CHANNEL, send);
         });
     }

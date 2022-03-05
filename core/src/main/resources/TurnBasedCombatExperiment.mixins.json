@@ -4,8 +4,10 @@
   "package": "io.github.stuff_stuffs.tbcexcore.mixin.impl",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "MixinServerWorld"
   ],
   "client": [
+    "MixinClientWorld"
   ],
   "injectors": {
     "defaultRequire": 1
