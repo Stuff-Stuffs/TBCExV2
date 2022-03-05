@@ -73,6 +73,17 @@ public class BattleStateImpl implements BattleState {
     }
 
     @Override
+    public boolean join(final BattleParticipantState state, final BattleParticipantHandle handle) {
+        final BattleParticipantStateImpl copy = CodecUtil.copy((BattleParticipantStateImpl) state, BattleParticipantStateImpl.CODEC);
+        if (participantStateByHandle.containsKey(handle)) {
+            return false;
+        }
+        participantStateByHandle.putAndMoveToLast(handle, copy);
+        copy.init(handle, this);
+        return true;
+    }
+
+    @Override
     public BattleHandle getHandle() {
         if (!init) {
             throw new TBCExException("Attempted to access not initialized battle!");

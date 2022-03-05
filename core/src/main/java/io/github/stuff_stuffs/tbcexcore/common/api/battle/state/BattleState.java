@@ -14,4 +14,6 @@ public interface BattleState extends BattleStateView {
 
     @Override
     BattleEffectContainer getEffects();
+
+    boolean join(BattleParticipantState state, BattleParticipantHandle handle);
 }
