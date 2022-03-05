@@ -1,6 +1,6 @@
 package io.github.stuff_stuffs.tbcexutil.common;
 
-public class Vec2d {
+public final class Vec2d {
     public static final Vec2d ZERO = new Vec2d(0, 0);
     public final double x;
     public final double y;
@@ -26,7 +26,7 @@ public class Vec2d {
         return x * o.x + y * o.y;
     }
 
-    public Vec2d subtract(Vec2d o) {
+    public Vec2d subtract(final Vec2d o) {
         return new Vec2d(x - o.x, y - o.y);
     }
 

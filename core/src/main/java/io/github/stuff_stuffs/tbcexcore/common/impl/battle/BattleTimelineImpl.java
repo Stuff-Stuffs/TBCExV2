@@ -1,5 +1,7 @@
 package io.github.stuff_stuffs.tbcexcore.common.impl.battle;
 
+import com.mojang.serialization.Codec;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleTimeline;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.BattleAction;
 import io.github.stuff_stuffs.tbcexcore.common.impl.battle.state.BattleStateImpl;
@@ -9,8 +11,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BattleTimelineImpl implements BattleTimeline {
-    private final List<BattleAction> actions = new ArrayList<>();
+    public static final Codec<BattleTimelineImpl> CODEC = Codec.list(BattleAction.CODEC).xmap(BattleTimelineImpl::new, battleTimeline -> battleTimeline.actions);
+    private final List<BattleAction> actions;
+    private BattleHandle handle;
+    private boolean init = false;
     private BattleStateImpl state = new BattleStateImpl();
+
+    public BattleTimelineImpl() {
+        actions = new ArrayList<>();
+    }
+
+    private BattleTimelineImpl(final List<BattleAction> actions) {
+        this.actions = new ArrayList<>(actions);
+    }
+
+    public void init(final BattleHandle handle) {
+        if (!init) {
+            this.handle = handle;
+            state.init(handle);
+            for (final BattleAction action : actions) {
+                action.apply(state);
+            }
+            init = true;
+        }
+    }
 
     @Override
     public void trim(final int size) {
@@ -22,6 +46,7 @@ public class BattleTimelineImpl implements BattleTimeline {
                 actions.remove(actions.size() - 1);
             }
             state = new BattleStateImpl();
+            state.init(handle);
             for (final BattleAction action : actions) {
                 action.apply(state);
             }

@@ -7,6 +7,7 @@ import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.equipment.BattleParticipantEquipmentTypes;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.item.BattleItemTypes;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.BattleParticipantStats;
+import io.github.stuff_stuffs.tbcexcore.common.network.BattleUpdateRequestHandler;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 
@@ -22,6 +23,7 @@ public class TBCExCore implements ModInitializer {
         BattleParticipantEquipmentTypes.init();
         BattleEffectTypes.init();
         BattleActionTypes.init();
+        BattleUpdateRequestHandler.init();
     }
 
     public static Identifier createId(final String path) {

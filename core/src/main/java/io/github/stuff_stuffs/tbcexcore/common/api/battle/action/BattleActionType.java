@@ -6,7 +6,9 @@ import com.mojang.serialization.DynamicOps;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
 import net.minecraft.util.registry.RegistryEntry;
 
-public final class BattleActionType<T> {
+import java.util.function.Function;
+
+public final class BattleActionType<T extends BattleAction> {
     private final Codec<T> codec;
     private final RegistryEntry.Reference<BattleActionType<?>> reference;
 
@@ -15,8 +17,8 @@ public final class BattleActionType<T> {
         reference = BattleActionTypes.REGISTRY.createEntry(this);
     }
 
-    public <K> DataResult<T> decode(final DynamicOps<K> ops, final K val) {
-        return codec.parse(ops, val);
+    public <K> DataResult<BattleAction> decode(final DynamicOps<K> ops, final K val) {
+        return codec.parse(ops, val).map(Function.identity());
     }
 
     public <K> DataResult<K> encode(final DynamicOps<K> ops, final BattleAction action) {
