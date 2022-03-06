@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 public interface BattleParticipantInventory extends BattleParticipantInventoryView {
     BattleParticipantEquipment getEquipment(BattleParticipantEquipmentSlot slot);
 
-    BattleParticipantInventoryHandle getInventoryHandle(BattleParticipantEquipmentSlot slot);
+    @Nullable BattleParticipantInventoryHandle getInventoryHandle(BattleParticipantEquipmentSlot slot);
 
     @Nullable BattleParticipantItemStack take(BattleParticipantInventoryHandle handle, int amount);
 
