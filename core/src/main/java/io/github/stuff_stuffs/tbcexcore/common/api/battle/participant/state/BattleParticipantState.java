@@ -1,6 +1,7 @@
 package io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state;
 
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectContainer;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.health.BattleParticipantHealthContainer;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantInventory;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.BattleParticipantStatContainer;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.state.BattleState;
@@ -20,4 +21,7 @@ public interface BattleParticipantState extends BattleParticipantStateView {
 
     @Override
     BattleParticipantEffectContainer getEffectContainer();
+
+    @Override
+    BattleParticipantHealthContainer getHealthContainer();
 }

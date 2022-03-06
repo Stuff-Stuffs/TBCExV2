@@ -2,10 +2,12 @@ package io.github.stuff_stuffs.tbcexcore.common;
 
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.BattleActionTypes;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.effect.BattleEffectTypes;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.event.BattleEvents;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectTypes;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantEquipmentSlots;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.equipment.BattleParticipantEquipmentTypes;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.item.BattleItemTypes;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.restore.RestoreDataTypes;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.BattleParticipantStats;
 import io.github.stuff_stuffs.tbcexcore.common.network.BattleUpdateRequestHandler;
 import net.fabricmc.api.ModInitializer;
@@ -24,6 +26,8 @@ public class TBCExCore implements ModInitializer {
         BattleEffectTypes.init();
         BattleActionTypes.init();
         BattleUpdateRequestHandler.init();
+        RestoreDataTypes.init();
+        BattleEvents.init();
     }
 
     public static Identifier createId(final String path) {

@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.effect.BattleEffectContainer;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.event.BattleEvents;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantState;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.state.BattleState;
@@ -42,6 +43,7 @@ public class BattleStateImpl implements BattleState {
         if (!init) {
             this.handle = handle;
             init = true;
+            BattleState.BATTLE_EVENT_INIT.invoker().register(eventMap::register);
             for (final Map.Entry<BattleParticipantHandle, BattleParticipantStateImpl> entry : participantStateByHandle.entrySet()) {
                 entry.getValue().init(entry.getKey(), this);
             }
@@ -80,6 +82,12 @@ public class BattleStateImpl implements BattleState {
         }
         participantStateByHandle.putAndMoveToLast(handle, copy);
         copy.init(handle, this);
+        final boolean b = eventMap.getEventMut(BattleEvents.BATTLE_PRE_JOIN_EVENT).getInvoker().beforeJoin(copy);
+        if (!b) {
+            participantStateByHandle.removeLast();
+            return false;
+        }
+        eventMap.getEventMut(BattleEvents.BATTLE_POST_JOIN_EVENT).getInvoker().afterJoin(copy);
         return true;
     }
 
