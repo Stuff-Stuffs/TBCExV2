@@ -5,6 +5,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantState;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 import java.util.function.Function;
@@ -38,5 +39,14 @@ public final class RestoreDataType<T extends RestoreData> {
 
     public interface RestoreFunction<T extends RestoreData> {
         void restore(T data, BattleParticipantState state, World world);
+    }
+
+    @Override
+    public String toString() {
+        final Identifier id = RestoreDataTypes.REGISTRY.getId(this);
+        if (id == null) {
+            return "Unregistered RestoreDataType";
+        }
+        return "RestoreDataType{" + id + "}";
     }
 }

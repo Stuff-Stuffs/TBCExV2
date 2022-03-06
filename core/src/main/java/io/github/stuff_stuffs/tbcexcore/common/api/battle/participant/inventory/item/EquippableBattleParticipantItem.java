@@ -3,6 +3,6 @@ package io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.equipment.BattleParticipantEquipment;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantStateView;
 
-public interface EquippableBattleItem extends BattleItem {
+public interface EquippableBattleParticipantItem extends BattleParticipantItem {
     BattleParticipantEquipment createEquipment(BattleParticipantStateView view);
 }

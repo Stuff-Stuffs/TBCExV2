@@ -1,7 +1,7 @@
 package io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory;
 
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.equipment.BattleParticipantEquipment;
-import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.item.BattleItemStack;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.item.BattleParticipantItemStack;
 import org.jetbrains.annotations.Nullable;
 
 public interface BattleParticipantInventory extends BattleParticipantInventoryView {
@@ -9,9 +9,9 @@ public interface BattleParticipantInventory extends BattleParticipantInventoryVi
 
     BattleParticipantInventoryHandle getInventoryHandle(BattleParticipantEquipmentSlot slot);
 
-    @Nullable BattleItemStack take(BattleParticipantInventoryHandle handle, int amount);
+    @Nullable BattleParticipantItemStack take(BattleParticipantInventoryHandle handle, int amount);
 
-    BattleParticipantInventoryHandle give(BattleItemStack stack);
+    BattleParticipantInventoryHandle give(BattleParticipantItemStack stack);
 
     boolean equip(BattleParticipantInventoryHandle handle, BattleParticipantEquipmentSlot slot);
 

@@ -4,9 +4,10 @@ import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.BattleActionTyp
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.effect.BattleEffectTypes;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.event.BattleEvents;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectTypes;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.event.BattleParticipantEvents;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantEquipmentSlots;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.equipment.BattleParticipantEquipmentTypes;
-import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.item.BattleItemTypes;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.item.BattleParticipantItemTypes;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.restore.RestoreDataTypes;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.BattleParticipantStats;
 import io.github.stuff_stuffs.tbcexcore.common.network.BattleUpdateRequestHandler;
@@ -20,7 +21,7 @@ public class TBCExCore implements ModInitializer {
     public void onInitialize() {
         BattleParticipantStats.init();
         BattleParticipantEffectTypes.init();
-        BattleItemTypes.init();
+        BattleParticipantItemTypes.init();
         BattleParticipantEquipmentSlots.init();
         BattleParticipantEquipmentTypes.init();
         BattleEffectTypes.init();
@@ -28,6 +29,7 @@ public class TBCExCore implements ModInitializer {
         BattleUpdateRequestHandler.init();
         RestoreDataTypes.init();
         BattleEvents.init();
+        BattleParticipantEvents.init();
     }
 
     public static Identifier createId(final String path) {

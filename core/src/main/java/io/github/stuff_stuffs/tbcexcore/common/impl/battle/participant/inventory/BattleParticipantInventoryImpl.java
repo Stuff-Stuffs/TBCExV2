@@ -7,8 +7,8 @@ import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantInventory;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantInventoryHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.equipment.BattleParticipantEquipment;
-import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.item.BattleItemStack;
-import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.item.EquippableBattleItem;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.item.BattleParticipantItemStack;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.item.EquippableBattleParticipantItem;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantState;
 import io.github.stuff_stuffs.tbcexutil.common.CodecUtil;
@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class BattleParticipantInventoryImpl implements BattleParticipantInventory {
-    public static final Codec<BattleParticipantInventoryImpl> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.unboundedMap(BattleParticipantInventoryHandle.CODEC, BattleItemStack.CODEC).fieldOf("stacks").forGetter(inv -> inv.stacks), CodecUtil.createLinkedMapCodec(BattleParticipantEquipmentSlots.REGISTRY.getCodec(), BattleParticipantInventoryHandle.CODEC).fieldOf("handleBySlot").forGetter(inv -> inv.handleBySlot), Codec.unboundedMap(BattleParticipantEquipmentSlots.REGISTRY.getCodec(), BattleParticipantEquipment.CODEC).fieldOf("equipmentBySlot").forGetter(inv -> inv.equipmentBySlot), Codec.LONG.fieldOf("nextId").forGetter(inv -> inv.nextId)).apply(instance, BattleParticipantInventoryImpl::new));
-    private final Map<BattleParticipantInventoryHandle, BattleItemStack> stacks;
+    public static final Codec<BattleParticipantInventoryImpl> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.unboundedMap(BattleParticipantInventoryHandle.CODEC, BattleParticipantItemStack.CODEC).fieldOf("stacks").forGetter(inv -> inv.stacks), CodecUtil.createLinkedMapCodec(BattleParticipantEquipmentSlots.REGISTRY.getCodec(), BattleParticipantInventoryHandle.CODEC).fieldOf("handleBySlot").forGetter(inv -> inv.handleBySlot), Codec.unboundedMap(BattleParticipantEquipmentSlots.REGISTRY.getCodec(), BattleParticipantEquipment.CODEC).fieldOf("equipmentBySlot").forGetter(inv -> inv.equipmentBySlot), Codec.LONG.fieldOf("nextId").forGetter(inv -> inv.nextId)).apply(instance, BattleParticipantInventoryImpl::new));
+    private final Map<BattleParticipantInventoryHandle, BattleParticipantItemStack> stacks;
     private final Reference2ObjectLinkedOpenHashMap<BattleParticipantEquipmentSlot, BattleParticipantInventoryHandle> handleBySlot;
     private final Map<BattleParticipantEquipmentSlot, BattleParticipantEquipment> equipmentBySlot;
     private long nextId;
@@ -39,7 +39,7 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
         nextId = 0;
     }
 
-    private BattleParticipantInventoryImpl(final Map<BattleParticipantInventoryHandle, BattleItemStack> stacks, final Map<BattleParticipantEquipmentSlot, BattleParticipantInventoryHandle> handleBySlot, final Map<BattleParticipantEquipmentSlot, BattleParticipantEquipment> equipmentBySlot, final long nextId) {
+    private BattleParticipantInventoryImpl(final Map<BattleParticipantInventoryHandle, BattleParticipantItemStack> stacks, final Map<BattleParticipantEquipmentSlot, BattleParticipantInventoryHandle> handleBySlot, final Map<BattleParticipantEquipmentSlot, BattleParticipantEquipment> equipmentBySlot, final long nextId) {
         this.stacks = new Object2ReferenceOpenHashMap<>();
         this.handleBySlot = new Reference2ObjectLinkedOpenHashMap<>();
         this.equipmentBySlot = new Reference2ObjectOpenHashMap<>();
@@ -79,7 +79,7 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
     }
 
     @Override
-    public @Nullable BattleItemStack take(final BattleParticipantInventoryHandle handle, final int amount) {
+    public @Nullable BattleParticipantItemStack take(final BattleParticipantInventoryHandle handle, final int amount) {
         if (!init) {
             throw new TBCExException("Tried to access inventory before it was initialized");
         }
@@ -89,7 +89,7 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
         if (isEquipped(handle)) {
             return null;
         }
-        final BattleItemStack stack = stacks.get(handle);
+        final BattleParticipantItemStack stack = stacks.get(handle);
         if (stack == null) {
             return null;
         }
@@ -98,24 +98,24 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
             stacks.remove(handle);
             return stack;
         } else {
-            final BattleItemStack split = new BattleItemStack(stack.getItem(), stack.getCount() - amount);
-            final BattleItemStack ret = new BattleItemStack(stack.getItem(), amount);
+            final BattleParticipantItemStack split = new BattleParticipantItemStack(stack.getItem(), stack.getCount() - amount);
+            final BattleParticipantItemStack ret = new BattleParticipantItemStack(stack.getItem(), amount);
             stacks.put(handle, split);
             return ret;
         }
     }
 
     @Override
-    public BattleParticipantInventoryHandle give(final BattleItemStack stack) {
+    public BattleParticipantInventoryHandle give(final BattleParticipantItemStack stack) {
         BattleParticipantInventoryHandle handle = null;
-        for (final Map.Entry<BattleParticipantInventoryHandle, BattleItemStack> entry : stacks.entrySet()) {
+        for (final Map.Entry<BattleParticipantInventoryHandle, BattleParticipantItemStack> entry : stacks.entrySet()) {
             if (entry.getValue().canCombine(stack)) {
                 handle = entry.getKey();
                 break;
             }
         }
         if (handle != null) {
-            stacks.put(handle, new BattleItemStack(stack.getItem(), stack.getCount() + stacks.get(handle).getCount()));
+            stacks.put(handle, new BattleParticipantItemStack(stack.getItem(), stack.getCount() + stacks.get(handle).getCount()));
             return handle;
         }
         handle = new BattleParticipantInventoryHandle(this.handle, nextId++);
@@ -128,8 +128,8 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
         if (equipmentBySlot.get(slot) != null) {
             return false;
         }
-        final BattleItemStack stack = stacks.get(handle);
-        if (stack == null || !(stack.getItem() instanceof EquippableBattleItem equippable)) {
+        final BattleParticipantItemStack stack = stacks.get(handle);
+        if (stack == null || !(stack.getItem() instanceof EquippableBattleParticipantItem equippable)) {
             return false;
         }
         final BattleParticipantEquipment equipment = equippable.createEquipment(state);
@@ -164,7 +164,7 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
     }
 
     @Override
-    public BattleItemStack getStack(final BattleParticipantInventoryHandle handle) {
+    public BattleParticipantItemStack getStack(final BattleParticipantInventoryHandle handle) {
         if (!init) {
             throw new TBCExException("Tried to access inventory before it was initialized");
         }
@@ -191,7 +191,7 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
     }
 
     @Override
-    public PairIterator<BattleItemStack, BattleParticipantInventoryHandle> getIterator() {
+    public PairIterator<BattleParticipantItemStack, BattleParticipantInventoryHandle> getIterator() {
         if (!init) {
             throw new TBCExException("Tried to access inventory before it was initialized");
         }

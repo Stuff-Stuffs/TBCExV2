@@ -3,6 +3,8 @@ package io.github.stuff_stuffs.tbcexcore.common.impl.battle.participant.health;
 import com.mojang.serialization.Codec;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.BattleParticipant;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.BattleParticipantUtil;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.damage.BattleParticipantDamagePacket;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.event.BattleParticipantEvents;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.health.BattleParticipantHealthContainer;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.BattleParticipantStats;
 import io.github.stuff_stuffs.tbcexcore.common.impl.battle.participant.state.BattleParticipantStateImpl;
@@ -34,5 +36,17 @@ public class BattleParticipantHealthContainerImpl implements BattleParticipantHe
             throw new TBCExException("Tried to access a health container before initialization!");
         }
         return health;
+    }
+
+    //TODO death
+    @Override
+    public boolean damage(BattleParticipantDamagePacket damage) {
+        damage = state.getEventMap().getEventMut(BattleParticipantEvents.BATTLE_PARTICIPANT_PRE_DAMAGE_EVENT).getInvoker().beforeDamage(state, damage);
+        if (damage.getSum() == 0) {
+            return false;
+        }
+        health = Math.max(0, health - damage.getSum());
+        state.getEventMap().getEventMut(BattleParticipantEvents.BATTLE_PARTICIPANT_POST_DAMAGE_EVENT).getInvoker().postDamage(state, damage);
+        return true;
     }
 }

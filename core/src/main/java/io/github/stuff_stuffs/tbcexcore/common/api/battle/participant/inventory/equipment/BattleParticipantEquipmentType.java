@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.RegistryEntry;
 
 import java.util.function.Function;
@@ -30,5 +31,14 @@ public final class BattleParticipantEquipmentType<T extends BattleParticipantEqu
 
     public RegistryEntry.Reference<BattleParticipantEquipmentType<?>> getReference() {
         return reference;
+    }
+
+    @Override
+    public String toString() {
+        final Identifier id = BattleParticipantEquipmentTypes.REGISTRY.getId(this);
+        if (id == null) {
+            return "Unregistered BattleParticipantEquipmentType";
+        }
+        return "BattleParticipantEquipmentType{" + id + "}";
     }
 }

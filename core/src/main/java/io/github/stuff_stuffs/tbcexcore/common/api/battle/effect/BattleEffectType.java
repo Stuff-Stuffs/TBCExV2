@@ -3,7 +3,9 @@ package io.github.stuff_stuffs.tbcexcore.common.api.battle.effect;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantEquipmentSlots;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.RegistryEntry;
 
 import java.util.function.BinaryOperator;
@@ -37,5 +39,14 @@ public final class BattleEffectType<View extends BattleEffect, Mut extends View>
             throw new TBCExException("Type mismatch");
         }
         return combiner.apply((Mut) first, (Mut) second);
+    }
+
+    @Override
+    public String toString() {
+        final Identifier id = BattleEffectTypes.REGISTRY.getId(this);
+        if (id == null) {
+            return "Unregistered BattleEffectType";
+        }
+        return "BattleEffectType{" + id + "}";
     }
 }

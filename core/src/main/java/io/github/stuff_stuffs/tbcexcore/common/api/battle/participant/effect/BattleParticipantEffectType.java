@@ -4,9 +4,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.BattleParticipant;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.damage.BattleParticipantDamageTypes;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
 import net.minecraft.entity.Entity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.RegistryEntry;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,9 +65,11 @@ public final class BattleParticipantEffectType<View extends BattleParticipantEff
 
     @Override
     public String toString() {
-        return "BattleParticipantEffectType{" +
-                "name=" + name +
-                '}';
+        final Identifier id = BattleParticipantEffectTypes.REGISTRY.getId(this);
+        if (id == null) {
+            return "Unregistered BattleParticipantEffectType";
+        }
+        return "BattleParticipantEffectType{" + id + "}";
     }
 
     public interface Extractor<T extends BattleParticipantEffect> {

@@ -7,12 +7,12 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 
-public final class BattleItemTypes {
-    public static final Registry<BattleItemType<?>> REGISTRY = FabricRegistryBuilder.from(new SimpleRegistry<BattleItemType<?>>(RegistryKey.ofRegistry(TBCExCore.createId("battle_item_type")), Lifecycle.stable(), BattleItemType::getReference)).buildAndRegister();
+public final class BattleParticipantItemTypes {
+    public static final Registry<BattleParticipantItemType<?>> REGISTRY = FabricRegistryBuilder.from(new SimpleRegistry<BattleParticipantItemType<?>>(RegistryKey.ofRegistry(TBCExCore.createId("battle_item_type")), Lifecycle.stable(), BattleParticipantItemType::getReference)).buildAndRegister();
 
     public static void init() {
     }
 
-    private BattleItemTypes() {
+    private BattleParticipantItemTypes() {
     }
 }
