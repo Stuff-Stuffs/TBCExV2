@@ -1,5 +1,6 @@
 package io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state;
 
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.BattleParticipantTeam;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectContainerView;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.health.BattleParticipantHealthContainerView;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantInventoryView;
@@ -33,6 +34,8 @@ public interface BattleParticipantStateView {
     double getStat(BattleParticipantStat stat);
 
     BattleParticipantHealthContainerView getHealthContainer();
+
+    BattleParticipantTeam getTeam();
 
     interface EventRegisterer {
         void register(BattleStateView.EventInitializer initializer);

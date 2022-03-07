@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.ActionTrace;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffect;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectContainer;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectType;
@@ -12,6 +13,7 @@ import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.Bat
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantState;
 import io.github.stuff_stuffs.tbcexutil.common.CodecUtil;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
+import io.github.stuff_stuffs.tbcexutil.common.Tracer;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 
 import java.util.List;
@@ -49,19 +51,19 @@ public class BattleParticipantEffectContainerImpl implements BattleParticipantEf
         return effects.entrySet().stream().map(entry -> Pair.<BattleParticipantEffectType<?, ?>, BattleParticipantEffect>of(entry.getKey(), entry.getValue())).toList();
     }
 
-    public void init(final BattleParticipantState state) {
+    public void init(final BattleParticipantState state, Tracer<ActionTrace> tracer) {
         if (init) {
             return;
         }
         this.state = state;
         init = true;
         for (final BattleParticipantEffect effect : effects.values()) {
-            effect.init(state);
+            effect.init(state, tracer);
         }
     }
 
     @Override
-    public void addEffect(final BattleParticipantEffect effect) {
+    public void addEffect(final BattleParticipantEffect effect, Tracer<ActionTrace> tracer) {
         if (!init) {
             throw new TBCExException("Not initialized effect container before tried to use");
         }
@@ -70,21 +72,21 @@ public class BattleParticipantEffectContainerImpl implements BattleParticipantEf
             effects.remove(effect.getType());
             final BattleParticipantEffect combined = effect.getType().combine(effect, prev);
             effects.put(effect.getType(), combined);
-            prev.deinit();
-            combined.init(state);
+            prev.deinit(tracer);
+            combined.init(state, tracer);
         } else {
-            effect.init(state);
+            effect.init(state, tracer);
         }
     }
 
     @Override
-    public void removeEffect(final BattleParticipantEffectType<?, ?> type) {
+    public void removeEffect(final BattleParticipantEffectType<?, ?> type, Tracer<ActionTrace> tracer) {
         if (!init) {
             throw new TBCExException("Not initialized effect container before tried to use");
         }
         final BattleParticipantEffect removed = effects.remove(type);
         if (removed != null) {
-            removed.deinit();
+            removed.deinit(tracer);
         }
     }
 

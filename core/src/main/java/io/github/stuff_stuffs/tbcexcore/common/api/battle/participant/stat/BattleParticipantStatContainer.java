@@ -1,5 +1,7 @@
 package io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat;
 
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.ActionTrace;
+import io.github.stuff_stuffs.tbcexutil.common.Tracer;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 
@@ -20,8 +22,8 @@ public final class BattleParticipantStatContainer {
         return containers.get(stat).compute();
     }
 
-    public BattleParticipantStatModifierHandle addModifier(final BattleParticipantStat stat, final BattleParticipantStatModifier modifier, final BattleParticipantStatModifier.Phase phase) {
-        return containers.get(stat).addModifier(modifier, phase);
+    public BattleParticipantStatModifierHandle addModifier(final BattleParticipantStat stat, final BattleParticipantStatModifier modifier, final BattleParticipantStatModifier.Phase phase, Tracer<ActionTrace> tracer) {
+        return containers.get(stat).addModifier(modifier, phase, tracer);
     }
 
     static final class Container {
@@ -37,7 +39,7 @@ public final class BattleParticipantStatContainer {
             }
         }
 
-        void destroy(final BattleParticipantStatModifierHandle handle) {
+        void destroy(final BattleParticipantStatModifierHandle handle, Tracer<ActionTrace> tracer) {
             for (final Reference2ObjectLinkedOpenHashMap<BattleParticipantStatModifierHandle, BattleParticipantStatModifier> map : modifiers) {
                 map.remove(handle);
             }
@@ -53,7 +55,7 @@ public final class BattleParticipantStatContainer {
             return t;
         }
 
-        public BattleParticipantStatModifierHandle addModifier(final BattleParticipantStatModifier modifier, final BattleParticipantStatModifier.Phase phase) {
+        public BattleParticipantStatModifierHandle addModifier(final BattleParticipantStatModifier modifier, final BattleParticipantStatModifier.Phase phase, Tracer<ActionTrace> tracer) {
             final BattleParticipantStatModifierHandle handle = new BattleParticipantStatModifierHandle(this);
             modifiers[phase.ordinal()].putAndMoveToLast(handle, modifier);
             return handle;

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "tbcexcore",
+  "id": "tbcex_core_v2",
   "version": "${version}",
   "name": "TurnBasedCombatExperimentCore",
   "description": "",

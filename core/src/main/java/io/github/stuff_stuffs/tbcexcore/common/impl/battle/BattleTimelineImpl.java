@@ -3,9 +3,11 @@ package io.github.stuff_stuffs.tbcexcore.common.impl.battle;
 import com.mojang.serialization.Codec;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleTimeline;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.ActionTrace;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.BattleAction;
 import io.github.stuff_stuffs.tbcexcore.common.impl.battle.state.BattleStateImpl;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
+import io.github.stuff_stuffs.tbcexutil.common.Tracer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +30,10 @@ public class BattleTimelineImpl implements BattleTimeline {
     public void init(final BattleHandle handle) {
         if (!init) {
             this.handle = handle;
-            state.init(handle);
+            final Tracer<ActionTrace> tracer = new Tracer<>(i -> false);
+            state.init(handle, tracer);
             for (final BattleAction action : actions) {
-                action.apply(state);
+                action.apply(state, tracer);
             }
             init = true;
         }
@@ -46,9 +49,10 @@ public class BattleTimelineImpl implements BattleTimeline {
                 actions.remove(actions.size() - 1);
             }
             state = new BattleStateImpl();
-            state.init(handle);
+            final Tracer<ActionTrace> tracer = new Tracer<>(i -> false);
+            state.init(handle, tracer);
             for (final BattleAction action : actions) {
-                action.apply(state);
+                action.apply(state, tracer);
             }
         }
     }
@@ -58,9 +62,9 @@ public class BattleTimelineImpl implements BattleTimeline {
     }
 
     @Override
-    public void push(final BattleAction action) {
+    public void push(final BattleAction action, final Tracer<ActionTrace> tracer) {
         actions.add(action);
-        action.apply(state);
+        action.apply(state, tracer);
     }
 
     @Override

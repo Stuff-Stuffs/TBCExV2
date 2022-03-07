@@ -4,10 +4,12 @@ import io.github.stuff_stuffs.tbcexcore.client.network.BattleUpdateRequestSender
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.Battle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleWorld;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.ActionTrace;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.BattleAction;
 import io.github.stuff_stuffs.tbcexcore.common.impl.battle.BattleImpl;
 import io.github.stuff_stuffs.tbcexcore.common.impl.battle.BattleTimelineImpl;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
+import io.github.stuff_stuffs.tbcexutil.common.Tracer;
 import it.unimi.dsi.fastutil.longs.Long2ReferenceMap;
 import it.unimi.dsi.fastutil.longs.Long2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -60,8 +62,9 @@ public class ClientBattleWorldImpl implements BattleWorld {
             }
             final BattleTimelineImpl timeline = (BattleTimelineImpl) battle.getTimeline();
             timeline.trim(size);
+            Tracer<ActionTrace> tracer = new Tracer<>(i -> false);
             for (final BattleAction action : actions) {
-                timeline.push(action);
+                timeline.push(action, tracer);
             }
         }
     }

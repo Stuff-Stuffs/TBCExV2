@@ -5,6 +5,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.state.BattleState;
 import io.github.stuff_stuffs.tbcexutil.common.CodecUtil;
+import io.github.stuff_stuffs.tbcexutil.common.Tracer;
 
 public interface BattleAction {
     Codec<BattleAction> CODEC = CodecUtil.createDependentPairCodecFirst(BattleActionTypes.REGISTRY.getCodec(), new CodecUtil.DependentEncoder<>() {
@@ -21,5 +22,5 @@ public interface BattleAction {
 
     BattleActionType<?> getType();
 
-    void apply(BattleState state);
+    void apply(BattleState state, Tracer<ActionTrace> tracer);
 }

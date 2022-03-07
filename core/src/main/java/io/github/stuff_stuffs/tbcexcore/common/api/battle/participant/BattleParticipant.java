@@ -11,4 +11,6 @@ public interface BattleParticipant {
     RestoreData joinBattle(BattleHandle handle);
 
     long getHealth();
+
+    BattleParticipantTeam getTeam();
 }

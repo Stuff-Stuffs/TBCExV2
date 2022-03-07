@@ -2,12 +2,14 @@ package io.github.stuff_stuffs.tbcexcore.common.impl.battle.participant.effect;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.ActionTrace;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.BattleParticipant;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectType;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectTypes;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.*;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantState;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExUtil;
+import io.github.stuff_stuffs.tbcexutil.common.Tracer;
 import it.unimi.dsi.fastutil.objects.Reference2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Reference2DoubleOpenHashMap;
 import net.minecraft.entity.Entity;
@@ -32,17 +34,17 @@ public class RacialStatEffect implements RacialStatEffectView {
     }
 
     @Override
-    public void init(final BattleParticipantState state) {
+    public void init(final BattleParticipantState state, final Tracer<ActionTrace> tracer) {
         final BattleParticipantStatContainer container = state.getStatContainer();
         for (final Reference2DoubleMap.Entry<BattleParticipantStat> entry : basics.reference2DoubleEntrySet()) {
             final double v = entry.getDoubleValue();
-            handles.add(container.addModifier(entry.getKey(), (current, stat) -> current + v, BattleParticipantStatModifier.Phase.ADDERS));
+            handles.add(container.addModifier(entry.getKey(), (current, stat) -> current + v, BattleParticipantStatModifier.Phase.ADDERS, tracer));
         }
     }
 
     @Override
-    public void deinit() {
-        handles.forEach(BattleParticipantStatModifierHandle::destroy);
+    public void deinit(final Tracer<ActionTrace> tracer) {
+        handles.forEach(i -> i.destroy(tracer));
         handles.clear();
     }
 

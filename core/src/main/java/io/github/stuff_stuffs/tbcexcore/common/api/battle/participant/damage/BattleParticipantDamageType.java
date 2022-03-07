@@ -1,6 +1,5 @@
 package io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.damage;
 
-import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.BattleParticipantStats;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.RegistryEntry;

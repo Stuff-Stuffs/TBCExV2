@@ -2,6 +2,7 @@ package io.github.stuff_stuffs.tbcexcore.common.impl.battle.participant.inventor
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.ActionTrace;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantEquipmentSlot;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantEquipmentSlots;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantInventory;
@@ -14,6 +15,7 @@ import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.Batt
 import io.github.stuff_stuffs.tbcexutil.common.CodecUtil;
 import io.github.stuff_stuffs.tbcexutil.common.PairIterator;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
+import io.github.stuff_stuffs.tbcexutil.common.Tracer;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
@@ -79,7 +81,7 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
     }
 
     @Override
-    public @Nullable BattleParticipantItemStack take(final BattleParticipantInventoryHandle handle, final int amount) {
+    public @Nullable BattleParticipantItemStack take(final BattleParticipantInventoryHandle handle, final int amount, Tracer<ActionTrace> tracer) {
         if (!init) {
             throw new TBCExException("Tried to access inventory before it was initialized");
         }
@@ -106,7 +108,7 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
     }
 
     @Override
-    public BattleParticipantInventoryHandle give(final BattleParticipantItemStack stack) {
+    public BattleParticipantInventoryHandle give(final BattleParticipantItemStack stack, Tracer<ActionTrace> tracer) {
         BattleParticipantInventoryHandle handle = null;
         for (final Map.Entry<BattleParticipantInventoryHandle, BattleParticipantItemStack> entry : stacks.entrySet()) {
             if (entry.getValue().canCombine(stack)) {
@@ -124,7 +126,7 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
     }
 
     @Override
-    public boolean equip(final BattleParticipantInventoryHandle handle, final BattleParticipantEquipmentSlot slot) {
+    public boolean equip(final BattleParticipantInventoryHandle handle, final BattleParticipantEquipmentSlot slot, Tracer<ActionTrace> tracer) {
         if (equipmentBySlot.get(slot) != null) {
             return false;
         }
@@ -149,7 +151,7 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
     }
 
     @Override
-    public boolean unequip(final BattleParticipantEquipmentSlot slot) {
+    public boolean unequip(final BattleParticipantEquipmentSlot slot, Tracer<ActionTrace> tracer) {
         if (equipmentBySlot.get(slot) == null) {
             return false;
         }

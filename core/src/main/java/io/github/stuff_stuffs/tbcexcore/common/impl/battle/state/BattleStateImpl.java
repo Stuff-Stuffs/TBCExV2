@@ -3,6 +3,7 @@ package io.github.stuff_stuffs.tbcexcore.common.impl.battle.state;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleHandle;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.ActionTrace;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.effect.BattleEffectContainer;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.event.BattleEvents;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantHandle;
@@ -12,6 +13,7 @@ import io.github.stuff_stuffs.tbcexcore.common.impl.battle.effect.BattleEffectCo
 import io.github.stuff_stuffs.tbcexcore.common.impl.battle.participant.state.BattleParticipantStateImpl;
 import io.github.stuff_stuffs.tbcexutil.common.CodecUtil;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
+import io.github.stuff_stuffs.tbcexutil.common.Tracer;
 import io.github.stuff_stuffs.tbcexutil.common.event.map.EventMapImpl;
 import io.github.stuff_stuffs.tbcexutil.common.event.map.MutEventMap;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceLinkedOpenHashMap;
@@ -39,13 +41,13 @@ public class BattleStateImpl implements BattleState {
         this.effectContainer = effectContainer;
     }
 
-    public void init(final BattleHandle handle) {
+    public void init(final BattleHandle handle, Tracer<ActionTrace> tracer) {
         if (!init) {
             this.handle = handle;
             init = true;
             BattleState.BATTLE_EVENT_INIT.invoker().register(eventMap::register);
             for (final Map.Entry<BattleParticipantHandle, BattleParticipantStateImpl> entry : participantStateByHandle.entrySet()) {
-                entry.getValue().init(entry.getKey(), this);
+                entry.getValue().init(entry.getKey(), this, tracer);
             }
         }
     }
@@ -75,19 +77,22 @@ public class BattleStateImpl implements BattleState {
     }
 
     @Override
-    public boolean join(final BattleParticipantState state, final BattleParticipantHandle handle) {
+    public boolean join(final BattleParticipantState state, final BattleParticipantHandle handle, Tracer<ActionTrace> tracer) {
+        if (!init) {
+            throw new TBCExException("Attempted to access not initialized battle!");
+        }
         final BattleParticipantStateImpl copy = CodecUtil.copy((BattleParticipantStateImpl) state, BattleParticipantStateImpl.CODEC);
         if (participantStateByHandle.containsKey(handle)) {
             return false;
         }
         participantStateByHandle.putAndMoveToLast(handle, copy);
-        copy.init(handle, this);
-        final boolean b = eventMap.getEventMut(BattleEvents.BATTLE_PRE_JOIN_EVENT).getInvoker().beforeJoin(copy);
+        copy.init(handle, this, tracer);
+        final boolean b = eventMap.getEventMut(BattleEvents.BATTLE_PRE_JOIN_EVENT).getInvoker().beforeJoin(copy, tracer);
         if (!b) {
             participantStateByHandle.removeLast();
             return false;
         }
-        eventMap.getEventMut(BattleEvents.BATTLE_POST_JOIN_EVENT).getInvoker().afterJoin(copy);
+        eventMap.getEventMut(BattleEvents.BATTLE_POST_JOIN_EVENT).getInvoker().afterJoin(copy, tracer);
         return true;
     }
 

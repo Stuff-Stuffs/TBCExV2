@@ -9,7 +9,7 @@ import net.minecraft.util.registry.SimpleRegistry;
 
 import java.util.Set;
 
-public class BattleParticipantDamageTypes {
+public final class BattleParticipantDamageTypes {
     public static final Registry<BattleParticipantDamageType> REGISTRY = FabricRegistryBuilder.from(new SimpleRegistry<>(RegistryKey.ofRegistry(TBCExCore.createId("battle_participant_damage_type")), Lifecycle.stable(), BattleParticipantDamageType::getReference)).buildAndRegister();
     public static final BattleParticipantDamageType ROOT = new BattleParticipantDamageType(Set.of());
 
