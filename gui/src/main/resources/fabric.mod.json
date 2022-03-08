@@ -18,6 +18,7 @@
     ]
   },
   "mixins": [
+    "TBCExGui.mixins.json"
   ],
   "accessWidener": "TBCExGui.accesswidener",
   "depends": {
