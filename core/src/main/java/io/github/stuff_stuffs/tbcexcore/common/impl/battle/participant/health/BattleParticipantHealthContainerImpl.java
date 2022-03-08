@@ -19,7 +19,7 @@ public class BattleParticipantHealthContainerImpl implements BattleParticipantHe
     private BattleParticipantStateImpl state;
 
     public BattleParticipantHealthContainerImpl(final BattleParticipant participant) {
-        health = participant.getHealth();
+        health = participant.tbcex$getHealth();
     }
 
     private BattleParticipantHealthContainerImpl(final long health) {

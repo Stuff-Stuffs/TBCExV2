@@ -49,7 +49,7 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         statContainer = new BattleParticipantStatContainer();
         inventory = new BattleParticipantInventoryImpl();
         healthContainer = new BattleParticipantHealthContainerImpl(participant);
-        team = participant.getTeam();
+        team = participant.tbcex$getTeam();
         this.restoreData = restoreData;
     }
 

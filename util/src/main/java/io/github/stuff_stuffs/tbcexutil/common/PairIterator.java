@@ -1,5 +1,8 @@
 package io.github.stuff_stuffs.tbcexutil.common;
 
+import net.minecraft.inventory.Inventory;
+import net.minecraft.item.ItemStack;
+
 import java.util.Iterator;
 import java.util.Map;
 
@@ -25,6 +28,30 @@ public interface PairIterator<L, R> {
             @Override
             public L getRight() {
                 return PairIterator.this.getLeft();
+            }
+        };
+    }
+
+    static PairIterator<ItemStack, Integer> fromInventory(final Inventory inventory) {
+        return new PairIterator<>() {
+            private int index = -1;
+
+            @Override
+            public boolean next() {
+                while (index < inventory.size() && (index == -1 || inventory.getStack(index).isEmpty())) {
+                    index++;
+                }
+                return index < inventory.size();
+            }
+
+            @Override
+            public ItemStack getLeft() {
+                return inventory.getStack(index);
+            }
+
+            @Override
+            public Integer getRight() {
+                return index;
             }
         };
     }

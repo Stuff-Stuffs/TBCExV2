@@ -6,11 +6,13 @@ import io.github.stuff_stuffs.tbcexutil.common.PairIterator;
 import net.minecraft.item.ItemStack;
 
 public interface BattleParticipant {
-    PairIterator<ItemStack, Integer> getInventoryIterator();
+    PairIterator<ItemStack, Integer> tbcex$getInventoryIterator();
 
-    RestoreData joinBattle(BattleHandle handle);
+    RestoreData tbcex$getRestoreData(BattleHandle handle);
 
-    long getHealth();
+    long tbcex$getHealth();
 
-    BattleParticipantTeam getTeam();
+    BattleParticipantTeam tbcex$getTeam();
+
+    boolean tbcex$canJoinBattle();
 }
