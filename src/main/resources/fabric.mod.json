@@ -14,6 +14,11 @@
   "depends": {
     "fabricloader": ">=0.13.3",
     "fabric": "*",
-    "minecraft": "1.18.2"
+    "minecraft": "1.18.2",
+    "tbcex_core_v2": "*",
+    "tbcex_util_v2": "*",
+    "tbcex_gui_v2": "*",
+    "tbcex_content_v2": "*",
+    "tbcex_character_v2": "*"
   }
 }

@@ -1,0 +1,7 @@
+dependencies {
+    api project(path: ':util', configuration: "namedElements")
+    api project(path: ':core', configuration: "namedElements")
+    api project(path: ':gui', configuration: "namedElements")
+    api project(path: ':content', configuration: "namedElements")
+    api project(path: ':content:character', configuration: "namedElements")
+}

@@ -1,16 +1,24 @@
 package io.github.stuff_stuffs.tbcexcore.common.impl.battle.world;
 
+import io.github.stuff_stuffs.tbcexcore.common.TBCExCore;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleWorld;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.BattleAction;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.BattleParticipant;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantHandle;
 import io.github.stuff_stuffs.tbcexcore.common.impl.battle.BattleImpl;
 import io.github.stuff_stuffs.tbcexcore.common.impl.battle.BattleTimelineImpl;
+import io.github.stuff_stuffs.tbcexcore.common.impl.battle.action.ParticipantJoinBattleAction;
+import io.github.stuff_stuffs.tbcexcore.common.impl.battle.participant.state.BattleParticipantStateImpl;
 import io.github.stuff_stuffs.tbcexutil.common.CacheEvictionMap;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
+import io.github.stuff_stuffs.tbcexutil.common.Tracer;
 import io.netty.buffer.ByteBufOutputStream;
 import it.unimi.dsi.fastutil.longs.*;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.*;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
@@ -122,6 +130,16 @@ public class ServerBattleWorldImpl implements BattleWorld {
         }
         evictionMap.access(handle.getId());
         return battle;
+    }
+
+    public void tryJoin(final BattleParticipant participant, final BattleHandle handle) {
+        final BattleImpl battle = getBattle(handle);
+        if (battle != null) {
+            ((BattleTimelineImpl) battle.getTimeline()).push(new ParticipantJoinBattleAction(new BattleParticipantHandle(handle, ((Entity) participant).getUuid()), new BattleParticipantStateImpl(participant, participant.tbcex$getRestoreData(handle))), new Tracer<>(i -> false));
+            if (participant instanceof ServerPlayerEntity entity) {
+                TBCExCore.setupPlayerToJoinBattle(entity, handle);
+            }
+        }
     }
 
     public BattleHandle create() {

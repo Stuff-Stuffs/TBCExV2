@@ -199,11 +199,14 @@ public class GuiContextImpl implements GuiContext {
         while (index<maxIndex) {
             stencilState = inUse.get(index).getSecond();
             setupStencil(stencilState);
-            while (index<maxIndex&stencilState==inUse.get(index).getSecond()) {
+            while (index<maxIndex&&stencilState==inUse.get(index).getSecond()) {
                 inUse.get(index).getFirst().emit(vertexConsumers);
                 index++;
             }
             vertexConsumers.draw();
+        }
+        for (Pair<DeferredEmittedQuad, StencilState> pair : inUse) {
+            quadStorage.add(pair.getFirst());
         }
         inUse.clear();
         GL11.glDisable(GL11.GL_STENCIL_TEST);

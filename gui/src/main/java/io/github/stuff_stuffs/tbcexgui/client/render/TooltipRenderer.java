@@ -61,7 +61,7 @@ public final class TooltipRenderer {
 
     private static void reloadSpriteMap() {
         RELOAD_SPRITE_MAP = false;
-        final Identifier base = new Identifier("tbcexgui", "assets/tbcexgui/gui/tooltip");
+        final Identifier base = new Identifier("tbcexgui", "gui/tooltip");
         for (final NinePatch.Part part : NinePatch.Part.values()) {
             TOOLTIP_SPRITE_MAP.put(part, MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(part.append(base)));
         }

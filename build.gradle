@@ -26,6 +26,13 @@ allprojects {
         modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     }
 
+    sourceSets {
+        testmod {
+            compileClasspath += main.compileClasspath
+            runtimeClasspath += main.runtimeClasspath
+        }
+    }
+
     processResources {
         inputs.property "version", project.version
         filteringCharset "UTF-8"
@@ -58,17 +65,33 @@ allprojects {
         // If you remove this line, sources will not be generated.
         withSourcesJar()
     }
+
+
 }
 
 dependencies {
-    subprojects {
-        include project(path: project.getPath(), configuration: "namedElements")
+    testImplementation project(":test")
+    afterEvaluate {
+        subprojects.each {
+            implementation project(path: ":${it.path}", configuration: "namedElements")
+        }
     }
 }
 
 jar {
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}" }
+    }
+}
+
+sourceSets {
+    testmod {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+    }
+    test {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
     }
 }
 

@@ -7,7 +7,6 @@ import io.github.stuff_stuffs.tbcexgui.client.api.GuiRenderMaterial;
 import io.github.stuff_stuffs.tbcexgui.client.api.text.TextDrawer;
 import io.github.stuff_stuffs.tbcexgui.client.api.text.TextDrawers;
 import io.github.stuff_stuffs.tbcexgui.client.widget.AbstractWidget;
-import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
 import io.github.stuff_stuffs.tbcexutil.common.Vec2d;
 import io.github.stuff_stuffs.tbcexutil.common.colour.Colour;
 import net.fabricmc.fabric.api.util.TriState;
@@ -39,23 +38,17 @@ public class CycleWheelWidget extends AbstractWidget {
         for (final Entry<?> entry : entries) {
             entry.render(context);
         }
-        final GuiInputContext inputContext = context.getInputContext();
-        try (final GuiInputContext.EventIterator events = inputContext.getEvents()) {
-            GuiInputContext.InputEvent event = events.next();
-            while (event != null) {
-                if (event instanceof GuiInputContext.MouseClick click) {
-                    final Vec2d mouseCursor = context.transformMouseCursor(new Vec2d(click.mouseX, click.mouseY));
-                    for (final Entry<?> entry : entries) {
-                        if (entry.mouseClicked(mouseCursor.x, mouseCursor.y, click.button)) {
-                            events.consume();
-                        }
+        processEvents(context, event -> {
+            if (event instanceof GuiInputContext.MouseClick click) {
+                final Vec2d mouseCursor = context.transformMouseCursor(new Vec2d(click.mouseX, click.mouseY));
+                for (final Entry<?> entry : entries) {
+                    if (entry.mouseClicked(mouseCursor.x, mouseCursor.y, click.button)) {
+                        return true;
                     }
                 }
-                event = events.next();
             }
-        } catch (final Exception e) {
-            throw new TBCExException("Error while processing gui events", e);
-        }
+            return false;
+        });
         context.exitSection(getDebugName());
     }
 
@@ -169,7 +162,7 @@ public class CycleWheelWidget extends AbstractWidget {
             maxWidth = maxWidth * MathHelper.fastInverseSqrt(maxWidth);
             final Vec2d deltaY = c[0].add(c[1].scale(-1));
             double maxHeight = deltaY.dot(deltaY);
-            maxHeight = 1 / MathHelper.fastInverseSqrt(maxHeight);
+            maxHeight = maxHeight * MathHelper.fastInverseSqrt(maxHeight);
             if (hovered) {
                 TEXT_DRAWER_SHADOWED.draw(maxWidth, maxHeight, name.apply(value).asOrderedText(), context);
             } else {
@@ -214,12 +207,12 @@ public class CycleWheelWidget extends AbstractWidget {
             final double denominator = (Math.PI * 2) / size;
             for (int i = 0; i < size; i++) {
                 final PartialEntry<?> partial = partialEntries.get(i);
-                entries.add(createEntry(partial, i, innerDiameter, outerDiameter, hoverDiameter, denominator));
+                entries.add(createEntry(partial, i, size, innerDiameter, outerDiameter, hoverDiameter, denominator));
             }
             return new CycleWheelWidget(entries);
         }
 
-        private static <T> Entry<T> createEntry(final PartialEntry<T> partial, final int i, final double innerDiameter, final double outerDiameter, final double hoverDiameter, final double denominator) {
+        private static <T> Entry<T> createEntry(final PartialEntry<T> partial, final int i, final int size, final double innerDiameter, final double outerDiameter, final double hoverDiameter, final double denominator) {
             final double a1 = i * denominator;
             final double a2 = (i + 1) * denominator;
             final double a1sin = Math.sin(a1);
@@ -232,7 +225,13 @@ public class CycleWheelWidget extends AbstractWidget {
             final Vec2d fourth = new Vec2d(innerDiameter * a2sin, innerDiameter * a2cos);
             final Vec2d secondHover = new Vec2d(hoverDiameter * a1sin, hoverDiameter * a1cos);
             final Vec2d thirdHover = new Vec2d(hoverDiameter * a2sin, hoverDiameter * a2cos);
-            final Entry<T> entry = new Entry<>(new Vec2d[]{first, second, third, fourth}, new Vec2d[]{first, secondHover, thirdHover, fourth}, (a1 + a2 + Math.PI) / 2, partial.colour, partial.alpha, partial.hoveredColour, partial.hoveredAlpha, partial.name, partial.tooltip, partial.enabled, partial.cycle, partial.startingValue);
+            final double angle;
+            if (size == 3) {
+                angle = a1 + a2;
+            } else {
+                angle = (a1 + a2 + Math.PI) / 2.0;
+            }
+            final Entry<T> entry = new Entry<>(new Vec2d[]{first, second, third, fourth}, new Vec2d[]{first, secondHover, thirdHover, fourth}, angle, partial.colour, partial.alpha, partial.hoveredColour, partial.hoveredAlpha, partial.name, partial.tooltip, partial.enabled, partial.cycle, partial.startingValue);
             partial.getter.setValue(() -> entry.value);
             return entry;
         }
