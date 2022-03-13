@@ -148,7 +148,7 @@ public class SelectionWheelWidget extends AbstractWidget {
                 avg = avg.add(d);
             }
             avg = avg.scale(0.25);
-            context.pushTranslate(avg.x, avg.y, 0);
+            context.pushTranslate(avg.x, avg.y, 0.01);
             double angNorm = angle + Math.PI / 2.0;
             angNorm = angNorm % Math.PI;
             angNorm = angNorm - Math.PI / 2.0;

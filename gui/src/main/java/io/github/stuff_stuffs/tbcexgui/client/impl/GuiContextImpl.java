@@ -3,7 +3,12 @@ package io.github.stuff_stuffs.tbcexgui.client.impl;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import io.github.stuff_stuffs.tbcexgui.client.api.*;
-import io.github.stuff_stuffs.tbcexgui.client.impl.render.*;
+import io.github.stuff_stuffs.tbcexgui.client.impl.render.DeferredEmittedQuad;
+import io.github.stuff_stuffs.tbcexgui.client.impl.render.GuiQuadEmitterImpl;
+import io.github.stuff_stuffs.tbcexgui.client.impl.render.MutableGuiQuadImpl;
+import io.github.stuff_stuffs.tbcexgui.client.impl.render.ScissorData;
+import io.github.stuff_stuffs.tbcexgui.client.impl.render.adapter.GuiVcpItemAdapter;
+import io.github.stuff_stuffs.tbcexgui.client.impl.render.adapter.GuiVcpTextAdapter;
 import io.github.stuff_stuffs.tbcexgui.client.render.GuiRenderLayers;
 import io.github.stuff_stuffs.tbcexgui.client.render.NinePatch;
 import io.github.stuff_stuffs.tbcexgui.client.render.TooltipRenderer;
@@ -15,10 +20,13 @@ import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GraphicsMode;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.OrderedText;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
@@ -35,6 +43,7 @@ public class GuiContextImpl implements GuiContext {
     private final Stack<StencilState> stencilStack = new ReferenceArrayList<>();
     private final VertexConsumerProvider.Immediate vertexConsumers;
     private final GuiVcpTextAdapter textAdapter;
+    private final GuiVcpItemAdapter itemAdapter;
     private final GuiQuadEmitterImpl emitter;
     private final GuiInputContextImpl inputContext;
     private final GuiTextRendererImpl textRenderer;
@@ -48,6 +57,7 @@ public class GuiContextImpl implements GuiContext {
         this.vertexConsumers = vertexConsumers;
         transforms = new ArrayList<>();
         textAdapter = new GuiVcpTextAdapter(this);
+        itemAdapter = new GuiVcpItemAdapter(this);
         emitter = new GuiQuadEmitterImpl(this);
         inputContext = new GuiInputContextImpl();
         textRenderer = new GuiTextRendererImpl(MinecraftClient.getInstance().textRenderer, this);
@@ -115,6 +125,12 @@ public class GuiContextImpl implements GuiContext {
     @Override
     public GuiTextRenderer getTextRenderer() {
         return textRenderer;
+    }
+
+    @Override
+    public void renderItem(final ItemStack stack, final int light, final ModelTransformation.Mode mode) {
+        final MatrixStack matrices = itemAdapter.getStack();
+        MinecraftClient.getInstance().getItemRenderer().renderItem(stack, mode, light, OverlayTexture.DEFAULT_UV, matrices, getItemAdapter(), 42);
     }
 
     @Override
@@ -195,17 +211,17 @@ public class GuiContextImpl implements GuiContext {
         inUse.sort(SORTER);
         StencilState stencilState;
         int index = 0;
-        int maxIndex = inUse.size();
-        while (index<maxIndex) {
+        final int maxIndex = inUse.size();
+        while (index < maxIndex) {
             stencilState = inUse.get(index).getSecond();
             setupStencil(stencilState);
-            while (index<maxIndex&&stencilState==inUse.get(index).getSecond()) {
+            while (index < maxIndex && stencilState == inUse.get(index).getSecond()) {
                 inUse.get(index).getFirst().emit(vertexConsumers);
                 index++;
             }
             vertexConsumers.draw();
         }
-        for (Pair<DeferredEmittedQuad, StencilState> pair : inUse) {
+        for (final Pair<DeferredEmittedQuad, StencilState> pair : inUse) {
             quadStorage.add(pair.getFirst());
         }
         inUse.clear();
@@ -227,7 +243,7 @@ public class GuiContextImpl implements GuiContext {
             VertexConsumer consumer = vertexConsumers.getBuffer(GuiRenderLayers.STENCIL_LAYER);
             while (stencilState != null) {
                 for (int i = 0; i < 4; i++) {
-                    consumer.vertex(stencilState.quad.x(i), stencilState.quad.y(i), stencilState.quad.depth());
+                    consumer.vertex(stencilState.quad.x(i), stencilState.quad.y(i), stencilState.quad.depthByIndex(i));
                     consumer.next();
                 }
                 stencilState = stencilState.parent;
@@ -237,7 +253,7 @@ public class GuiContextImpl implements GuiContext {
                 consumer = vertexConsumers.getBuffer(GuiRenderLayers.STENCIL_LAYER_TRANSLUCENT);
                 while (stencilState != null) {
                     for (int i = 0; i < 4; i++) {
-                        consumer.vertex(stencilState.quad.x(i), stencilState.quad.y(i), stencilState.quad.depth());
+                        consumer.vertex(stencilState.quad.x(i), stencilState.quad.y(i), stencilState.quad.depthByIndex(i));
                         consumer.next();
                     }
                     stencilState = stencilState.parent;
@@ -255,6 +271,10 @@ public class GuiContextImpl implements GuiContext {
 
     public GuiVcpTextAdapter getTextAdapter() {
         return textAdapter;
+    }
+
+    public GuiVcpItemAdapter getItemAdapter() {
+        return itemAdapter;
     }
 
     private static final class StencilState {

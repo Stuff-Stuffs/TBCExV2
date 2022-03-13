@@ -18,6 +18,10 @@ public final class BattleParticipantInventoryHandle {
         return parent;
     }
 
+    public long getId() {
+        return id;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

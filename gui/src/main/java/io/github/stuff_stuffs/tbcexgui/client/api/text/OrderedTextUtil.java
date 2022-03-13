@@ -156,7 +156,7 @@ public final class OrderedTextUtil {
             boolean whitespace = false;
             boolean separator = false;
             for (final char c : chars) {
-                if (Character.isWhitespace(c) || !Character.isAlphabetic(c)) {
+                if (Character.isWhitespace(c)) {
                     whitespace = true;
                 } else if (c == '.' || c == '-' || c == '!' || c == ';' || c == ',' || c == '?') {
                     separator = true;

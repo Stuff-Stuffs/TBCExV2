@@ -35,7 +35,15 @@ public class StackingWidget extends AbstractWidget {
     }
 
     public void push(final Widget widget, final Text name) {
-        widget.resize(getScreenWidth(), getScreenHeight(), getPixelWidth(), getPixelHeight());
+        double x = getScreenWidth() - buttonThickness;
+        final double y;
+        if (x < 1) {
+            y = getScreenHeight() / x;
+            x = 1;
+        } else {
+            y = getScreenHeight();
+        }
+        widget.resize(x, y);
         entries.add(new Entry(name, widget));
     }
 
@@ -54,11 +62,14 @@ public class StackingWidget extends AbstractWidget {
     }
 
     @Override
-    public void resize(final double width, final double height, final int pixelWidth, final int pixelHeight) {
-        super.resize(width, height, pixelWidth, pixelHeight);
-        root.widget.resize(width, height, pixelWidth, pixelHeight);
+    public void resize(final double width, final double height) {
+        super.resize(width, height);
+        final double x = getScreenWidth() - buttonThickness;
+        final double y;
+        y = getScreenHeight();
+        root.widget.resize(x, y);
         for (final Entry entry : entries) {
-            entry.widget.resize(width, height, pixelWidth, pixelHeight);
+            entry.widget.resize(x, y);
         }
     }
 
@@ -90,7 +101,7 @@ public class StackingWidget extends AbstractWidget {
         emitter.emit();
 
         final TextDrawer drawer = TextDrawers.oneShot(TextDrawers.HorizontalJustification.CENTER, TextDrawers.VerticalJustification.CENTER, IntRgbColour.WHITE.pack(), 0, false);
-        context.pushTranslate(1 + (getScreenWidth() - 1) / 2.0 - buttonThickness / 2.0, 0.5, 0);
+        context.pushTranslate(1 + (getScreenWidth() - 1) / 2.0 - buttonThickness / 2.0, 0.5, 0.01);
         context.pushRotate(QUARTER_TURN);
         final OrderedText text;
         if (last != null) {
@@ -105,11 +116,8 @@ public class StackingWidget extends AbstractWidget {
 
         final String childSection = getDebugName() + ".child";
         context.enterSection(childSection);
-        final double horizontalScale = (getScreenWidth() - buttonThickness) / getScreenWidth();
-        context.pushScale(horizontalScale, 1, 1);
-        context.pushTranslate(-buttonThickness / 4, 0, 0);
+        context.pushTranslate(-buttonThickness / 2.0, 0, 1);
         getTop().widget.render(context);
-        context.popGuiTransform();
         context.popGuiTransform();
         context.exitSection(childSection);
     }

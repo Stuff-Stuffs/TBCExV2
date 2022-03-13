@@ -4,6 +4,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import io.github.stuff_stuffs.tbcexutil.common.CodecUtil;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
+
+import java.util.List;
+import java.util.Set;
 
 public interface BattleParticipantItem {
     Codec<BattleParticipantItem> CODEC = CodecUtil.createDependentPairCodecFirst(BattleParticipantItemTypes.REGISTRY.getCodec(), new CodecUtil.DependentEncoder<>() {
@@ -18,7 +23,15 @@ public interface BattleParticipantItem {
         }
     }, BattleParticipantItem::getType);
 
+    Text getName();
+
     BattleParticipantItemType<?> getType();
+
+    Set<BattleParticipantItemCategory> getCategory();
+
+    BattleParticipantItemRarity getRarity();
+
+    List<ItemStack> convert(int count);
 
     //MUST OVERRIDE
     @Override

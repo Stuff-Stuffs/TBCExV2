@@ -45,7 +45,7 @@ public final class TooltipRenderer {
         final int size = components.size();
         double acc = 0;
         for (final OrderedText component : components) {
-            context.pushTranslate(x, y + (acc / height) * actualHeight, 0);
+            context.pushTranslate(x, y + (acc / height) * actualHeight, 0.01);
             TOOLTIP_TEXT_DRAWER.draw(actualWidth, actualHeight / size, component, context);
             context.popGuiTransform();
             acc += context.getTextRenderer().getHeight(component);

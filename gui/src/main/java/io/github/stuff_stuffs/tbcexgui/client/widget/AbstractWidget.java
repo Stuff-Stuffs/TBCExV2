@@ -8,14 +8,11 @@ import java.util.function.Predicate;
 
 public abstract class AbstractWidget implements Widget {
     private double width, height;
-    private int pixelWidth, pixelHeight;
 
     @Override
-    public void resize(final double width, final double height, final int pixelWidth, final int pixelHeight) {
+    public void resize(final double width, final double height) {
         this.width = width;
         this.height = height;
-        this.pixelWidth = pixelWidth;
-        this.pixelHeight = pixelHeight;
     }
 
     public double getScreenWidth() {
@@ -26,15 +23,7 @@ public abstract class AbstractWidget implements Widget {
         return height;
     }
 
-    public int getPixelWidth() {
-        return pixelWidth;
-    }
-
-    public int getPixelHeight() {
-        return pixelHeight;
-    }
-
-    protected void processEvents(final GuiContext context, final Predicate<GuiInputContext.InputEvent> eventConsumer) {
+    public static void processEvents(final GuiContext context, final Predicate<GuiInputContext.InputEvent> eventConsumer) {
         try (final GuiInputContext.EventIterator events = context.getInputContext().getEvents()) {
             GuiInputContext.InputEvent event;
             while ((event = events.next()) != null) {

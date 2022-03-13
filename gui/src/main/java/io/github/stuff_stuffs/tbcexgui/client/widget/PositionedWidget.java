@@ -20,8 +20,8 @@ public interface PositionedWidget extends Widget {
             }
 
             @Override
-            public void resize(final double width, final double height, final int pixelWidth, final int pixelHeight) {
-                widget.resize(width, height, pixelWidth, pixelHeight);
+            public void resize(final double width, final double height) {
+                widget.resize(width, height);
             }
 
             @Override

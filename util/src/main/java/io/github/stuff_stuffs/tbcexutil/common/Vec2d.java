@@ -37,4 +37,8 @@ public final class Vec2d {
                 ", y=" + y +
                 '}';
     }
+
+    public double length() {
+        return Math.sqrt(x*x+y*y);
+    }
 }

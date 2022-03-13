@@ -41,6 +41,11 @@ public class GuiQuadEmitterImpl implements GuiQuadEmitter {
     }
 
     @Override
+    public float depthByIndex(int index) {
+        return delegate.depthByIndex(index);
+    }
+
+    @Override
     public int colour(final int vertexIndex) {
         return delegate.colour(vertexIndex);
     }
@@ -78,7 +83,13 @@ public class GuiQuadEmitterImpl implements GuiQuadEmitter {
     }
 
     @Override
-    public GuiQuadEmitter depth(final float depth) {
+    public GuiQuadEmitter depth(int vertexIndex, final float depth) {
+        delegate.depth(vertexIndex, depth);
+        return this;
+    }
+
+    @Override
+    public GuiQuadEmitter depth(float depth) {
         delegate.depth(depth);
         return this;
     }

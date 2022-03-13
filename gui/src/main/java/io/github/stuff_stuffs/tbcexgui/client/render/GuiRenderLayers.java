@@ -17,6 +17,7 @@ import java.util.function.Function;
 
 //TODO fix guis in fabulous graphics mode
 public final class GuiRenderLayers extends RenderPhase {
+    public static final Cull CULL = RenderPhase.ENABLE_CULLING;
     public static final Cull NO_CULL = RenderPhase.DISABLE_CULLING;
     public static final Lightmap ENABLE_LIGHTMAP = RenderPhase.ENABLE_LIGHTMAP;
     public static final Lightmap DISABLE_LIGHTMAP = RenderPhase.DISABLE_LIGHTMAP;

@@ -43,10 +43,10 @@ public class PositionedStackWidget extends AbstractWidget implements PositionedW
     }
 
     @Override
-    public void resize(final double width, final double height, final int pixelWidth, final int pixelHeight) {
-        super.resize(width, height, pixelWidth, pixelHeight);
-        fallback.resize(width, height, pixelWidth, pixelHeight);
-        stack.forEach(widget -> widget.resize(width, height, pixelWidth, pixelHeight));
+    public void resize(final double width, final double height) {
+        super.resize(width, height);
+        fallback.resize(width, height);
+        stack.forEach(widget -> widget.resize(width, height));
     }
 
     public void push(final PositionedWidget widget) {

@@ -47,7 +47,7 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         eventMap = new EventMapImpl();
         effectContainer = new BattleParticipantEffectContainerImpl();
         statContainer = new BattleParticipantStatContainer();
-        inventory = new BattleParticipantInventoryImpl();
+        inventory = new BattleParticipantInventoryImpl(participant);
         healthContainer = new BattleParticipantHealthContainerImpl(participant);
         team = participant.tbcex$getTeam();
         this.restoreData = restoreData;
@@ -67,6 +67,7 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         BattleParticipantStateView.BATTLE_PARTICIPANT_EVENT_INIT.invoker().register(eventMap::register);
         this.handle = handle;
         battleState = state;
+        inventory.init(handle, this);
         effectContainer.init(this, tracer);
         healthContainer.init(this);
     }

@@ -28,7 +28,7 @@ public class GriddedPanelWidget extends AbstractPanelWidget {
         Preconditions.checkArgument(0 <= x && x < horizontalCells);
         Preconditions.checkArgument(0 <= y && y < verticalCells);
         cells[getIndex(x, y)] = widget;
-        widget.resize(getScreenWidth(), getScreenHeight(), getPixelWidth(), getPixelHeight());
+        widget.resize(getScreenWidth(), getScreenHeight());
     }
 
     private int getIndex(final int x, final int y) {
@@ -58,10 +58,10 @@ public class GriddedPanelWidget extends AbstractPanelWidget {
     }
 
     @Override
-    protected void resizeChildren(final double width, final double height, final int pixelWidth, final int pixelHeight) {
+    protected void resizeChildren(final double width, final double height) {
         for (final Widget cell : cells) {
             if (cell != null) {
-                cell.resize(width, height, pixelWidth, pixelHeight);
+                cell.resize(width, height);
             }
         }
     }

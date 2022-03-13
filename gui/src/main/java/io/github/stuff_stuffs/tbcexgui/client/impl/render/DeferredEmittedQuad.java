@@ -6,14 +6,15 @@ import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 
+import java.util.Arrays;
+
 public class DeferredEmittedQuad {
     private final MutableGuiQuadImpl delegate = new MutableGuiQuadImpl();
 
     public DeferredEmittedQuad() {
     }
 
-    public void copy(final GuiQuad quad) {
-        delegate.depth(quad.depth());
+    public void copy(final MutableGuiQuadImpl quad) {
         delegate.renderMaterial(quad.renderMaterial());
         delegate.tag(quad.tag());
         for (int i = 0; i < 4; i++) {
@@ -21,6 +22,7 @@ public class DeferredEmittedQuad {
             delegate.sprite(i, quad.spriteU(i), quad.spriteV(i));
             delegate.colour(i, quad.colour(i));
             delegate.light(i, quad.light(i));
+            delegate.depth(i, quad.depthByIndex(i));
         }
     }
 
@@ -29,7 +31,7 @@ public class DeferredEmittedQuad {
         final VertexConsumer vertexConsumer = vertexConsumers.getBuffer(renderMaterial.getRenderLayer());
         final int colourModifier = renderMaterial.translucent() ? 0 : 0xFF000000;
         for (int i = 0; i < 4; i++) {
-            vertexConsumer.vertex(delegate.x(i), delegate.y(i), delegate.depth());
+            vertexConsumer.vertex(delegate.x(i), delegate.y(i), delegate.depthByIndex(i));
             vertexConsumer.color(delegate.colour(i) | colourModifier);
             if (!renderMaterial.ignoreTexture()) {
                 vertexConsumer.texture(delegate.spriteU(i), delegate.spriteV(i));
@@ -42,8 +44,16 @@ public class DeferredEmittedQuad {
         }
     }
 
+    public double depth(int vertexIndex) {
+        return delegate.depthByIndex(vertexIndex);
+    }
+
     public double depth() {
-        return delegate.depth();
+        float sum = 0;
+        for (int i = 0; i < 4; i++) {
+            sum += depth(i);
+        }
+        return sum * 0.25;
     }
 
     public GuiRenderMaterial material() {

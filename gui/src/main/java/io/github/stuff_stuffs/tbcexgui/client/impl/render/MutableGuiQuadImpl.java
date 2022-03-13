@@ -19,9 +19,10 @@ public class MutableGuiQuadImpl implements MutableGuiQuad {
     private final float[] vs = new float[4];
     private final int[] colours = new int[4];
     private final int[] lights = new int[4];
+    private final float[] depth = new float[4];
     private GuiRenderMaterial renderMaterial = DEFAULT_RENDER_MATERIAL;
     private int tag;
-    private float depth;
+
 
     @Override
     public int tag() {
@@ -49,7 +50,16 @@ public class MutableGuiQuadImpl implements MutableGuiQuad {
 
     @Override
     public float depth() {
-        return depth;
+        float sum = 0;
+        for (int i = 0; i < 4; i++) {
+            sum += depth[i];
+        }
+        return sum*0.25f;
+    }
+
+    @Override
+    public float depthByIndex(int index) {
+        return depth[index];
     }
 
     @Override
@@ -90,8 +100,14 @@ public class MutableGuiQuadImpl implements MutableGuiQuad {
     }
 
     @Override
-    public MutableGuiQuad depth(final float depth) {
-        this.depth = depth;
+    public MutableGuiQuad depth(int vertexIndex,final float depth) {
+        this.depth[vertexIndex] = depth;
+        return this;
+    }
+
+    @Override
+    public MutableGuiQuad depth(float depth) {
+        Arrays.fill(this.depth, depth);
         return this;
     }
 
@@ -150,7 +166,7 @@ public class MutableGuiQuadImpl implements MutableGuiQuad {
         Arrays.fill(colours, 0);
         renderMaterial = DEFAULT_RENDER_MATERIAL;
         tag = 0;
-        depth = 0;
+        Arrays.fill(depth, 0);
     }
 
     private static void interpolate(final MutableGuiQuad q, final Sprite sprite) {

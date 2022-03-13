@@ -51,9 +51,9 @@ public abstract class HandledTBCExScreen<T extends ScreenHandler> extends Handle
         width = window.getFramebufferWidth();
         height = window.getFramebufferHeight();
         if (width > height) {
-            widget.resize(width / (double) height, 1, width, height);
+            widget.resize(width / (double) height, 1);
         } else {
-            widget.resize(1, height / (double) width, width, height);
+            widget.resize(1, height / (double) width);
         }
     }
 

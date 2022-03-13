@@ -8,7 +8,7 @@ public interface Widget {
     Colour NON_HOVER = new IntRgbColour(0x000000);
     Colour HOVER = new IntRgbColour(0x373737);
 
-    void resize(double width, double height, int pixelWidth, int pixelHeight);
+    void resize(double width, double height);
 
     void render(GuiContext context);
 

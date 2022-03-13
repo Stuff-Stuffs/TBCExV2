@@ -9,15 +9,17 @@ public class GuiRenderMaterialImpl implements GuiRenderMaterial {
     private final boolean translucent;
     private final boolean ignoreTexture;
     private final boolean ignoreLight;
+    private final boolean cull;
     private final String shader;
     private final Identifier texture;
     private final RenderLayer renderLayer;
 
-    public GuiRenderMaterialImpl(final boolean depthTest, final boolean translucent, final boolean ignoreTexture, final boolean ignoreLight, final String shader, final Identifier texture, final RenderLayer renderLayer) {
+    public GuiRenderMaterialImpl(final boolean depthTest, final boolean translucent, final boolean ignoreTexture, final boolean ignoreLight, boolean cull, final String shader, final Identifier texture, final RenderLayer renderLayer) {
         this.depthTest = depthTest;
         this.translucent = translucent;
         this.ignoreTexture = ignoreTexture;
         this.ignoreLight = ignoreLight;
+        this.cull = cull;
         this.shader = shader;
         this.texture = texture;
         this.renderLayer = renderLayer;
@@ -26,6 +28,11 @@ public class GuiRenderMaterialImpl implements GuiRenderMaterial {
     @Override
     public boolean depthTest() {
         return depthTest;
+    }
+
+    @Override
+    public boolean cull() {
+        return cull;
     }
 
     @Override

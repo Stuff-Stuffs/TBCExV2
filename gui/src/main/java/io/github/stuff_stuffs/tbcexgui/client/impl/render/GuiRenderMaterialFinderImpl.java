@@ -20,15 +20,17 @@ public class GuiRenderMaterialFinderImpl implements GuiRenderMaterialFinder {
     private final boolean translucent;
     private final boolean ignoreTexture;
     private final boolean ignoreLight;
+    private final boolean cull;
     private final String textureShader;
     private final String noTextureShader;
     private final Identifier texture;
 
-    public GuiRenderMaterialFinderImpl(final boolean depthTest, final boolean translucent, final boolean ignoreTexture, final boolean ignoreLight, final String textureShader, final String noTextureShader, final Identifier texture) {
+    public GuiRenderMaterialFinderImpl(final boolean depthTest, final boolean translucent, final boolean ignoreTexture, final boolean ignoreLight, boolean cull, final String textureShader, final String noTextureShader, final Identifier texture) {
         this.depthTest = depthTest;
         this.translucent = translucent;
         this.ignoreTexture = ignoreTexture;
         this.ignoreLight = ignoreLight;
+        this.cull = cull;
         this.textureShader = textureShader;
         this.noTextureShader = noTextureShader;
         this.texture = texture;
@@ -36,37 +38,41 @@ public class GuiRenderMaterialFinderImpl implements GuiRenderMaterialFinder {
 
     @Override
     public GuiRenderMaterialFinder depthTest(final boolean depthTest) {
-        return new GuiRenderMaterialFinderImpl(depthTest, translucent, ignoreTexture, ignoreLight, textureShader, noTextureShader, texture);
+        return new GuiRenderMaterialFinderImpl(depthTest, translucent, ignoreTexture, ignoreLight, cull, textureShader, noTextureShader, texture);
+    }
+
+    public GuiRenderMaterialFinder cull(boolean cull) {
+        return new GuiRenderMaterialFinderImpl(depthTest, translucent, ignoreTexture, ignoreLight, cull, textureShader, noTextureShader, texture);
     }
 
     @Override
     public GuiRenderMaterialFinder translucent(final boolean translucent) {
-        return new GuiRenderMaterialFinderImpl(depthTest, translucent, ignoreTexture, ignoreLight, textureShader, noTextureShader, texture);
+        return new GuiRenderMaterialFinderImpl(depthTest, translucent, ignoreTexture, ignoreLight, cull, textureShader, noTextureShader, texture);
     }
 
     @Override
     public GuiRenderMaterialFinder ignoreTexture(final boolean ignoreTexture) {
-        return new GuiRenderMaterialFinderImpl(depthTest, translucent, ignoreTexture, ignoreLight, textureShader, noTextureShader, texture);
+        return new GuiRenderMaterialFinderImpl(depthTest, translucent, ignoreTexture, ignoreLight, cull, textureShader, noTextureShader, texture);
     }
 
     @Override
     public GuiRenderMaterialFinder shader(final String textureShader, final String noTextureShader) {
-        return new GuiRenderMaterialFinderImpl(depthTest, translucent, ignoreTexture, ignoreLight, textureShader, noTextureShader, texture);
+        return new GuiRenderMaterialFinderImpl(depthTest, translucent, ignoreTexture, ignoreLight, cull, textureShader, noTextureShader, texture);
     }
 
     @Override
     public GuiRenderMaterialFinder texture(final Identifier texture) {
-        return new GuiRenderMaterialFinderImpl(depthTest, translucent, ignoreTexture, ignoreLight, textureShader, noTextureShader, texture);
+        return new GuiRenderMaterialFinderImpl(depthTest, translucent, ignoreTexture, ignoreLight, cull, textureShader, noTextureShader, texture);
     }
 
     @Override
     public GuiRenderMaterialFinder ignoreLight(final boolean ignoreLight) {
-        return new GuiRenderMaterialFinderImpl(depthTest, translucent, ignoreTexture, ignoreLight, textureShader, noTextureShader, texture);
+        return new GuiRenderMaterialFinderImpl(depthTest, translucent, ignoreTexture, ignoreLight, cull, textureShader, noTextureShader, texture);
     }
 
     @Override
     public GuiRenderMaterial find() {
-        return FACTORIES[getFactoryIndex(depthTest, translucent, ignoreTexture, ignoreLight)].create(ignoreTexture ? noTextureShader : textureShader, texture);
+        return FACTORIES[getFactoryIndex(depthTest, translucent, ignoreTexture, ignoreLight, cull)].create(ignoreTexture ? noTextureShader : textureShader, texture);
     }
 
     @Override
@@ -84,7 +90,7 @@ public class GuiRenderMaterialFinderImpl implements GuiRenderMaterialFinder {
         return NAMED_MATERIALS.get(id);
     }
 
-    private static int getFactoryIndex(final boolean depthTest, final boolean translucent, final boolean ignoreTexture, final boolean ignoreLight) {
+    private static int getFactoryIndex(final boolean depthTest, final boolean translucent, final boolean ignoreTexture, final boolean ignoreLight, boolean cull) {
         int key = 0;
         if (depthTest) {
             key |= 1;
@@ -98,6 +104,9 @@ public class GuiRenderMaterialFinderImpl implements GuiRenderMaterialFinder {
         if (ignoreLight) {
             key |= 8;
         }
+        if(cull) {
+            key |= 16;
+        }
         return key;
     }
 
@@ -107,18 +116,20 @@ public class GuiRenderMaterialFinderImpl implements GuiRenderMaterialFinder {
         private final boolean translucent;
         private final boolean ignoreTexture;
         private final boolean ignoreLight;
+        private final boolean cull;
         private final Map<String, RenderLayer> cache;
 
-        private MaterialFactory(final boolean depthTest, final boolean translucent, final boolean ignoreTexture, final boolean ignoreLight) {
+        private MaterialFactory(final boolean depthTest, final boolean translucent, final boolean ignoreTexture, final boolean ignoreLight, boolean cull) {
             this.depthTest = depthTest;
             this.translucent = translucent;
             this.ignoreTexture = ignoreTexture;
             this.ignoreLight = ignoreLight;
+            this.cull = cull;
             cache = new Object2ReferenceOpenHashMap<>(2);
         }
 
         public GuiRenderMaterialImpl create(final String shader, final Identifier texture) {
-            return new GuiRenderMaterialImpl(depthTest, translucent, ignoreTexture, ignoreLight, shader, texture, createRenderLayer(shader, texture));
+            return new GuiRenderMaterialImpl(depthTest, translucent, ignoreTexture, ignoreLight, cull, shader, texture, createRenderLayer(shader, texture));
         }
 
         private RenderLayer createRenderLayer(final String shader, final Identifier texture) {
@@ -131,7 +142,7 @@ public class GuiRenderMaterialFinderImpl implements GuiRenderMaterialFinder {
                             false,
                             translucent,
                             RenderLayer.MultiPhaseParameters.builder().
-                                    cull(GuiRenderLayers.NO_CULL).
+                                    cull(cull?GuiRenderLayers.CULL:GuiRenderLayers.NO_CULL).
                                     shader(GuiRenderLayers.getShader(shader, vertexFormat)).
                                     lightmap(ignoreLight ? GuiRenderLayers.DISABLE_LIGHTMAP : GuiRenderLayers.ENABLE_LIGHTMAP).
                                     depthTest(depthTest ? GuiRenderLayers.DEPTH_TEST : GuiRenderLayers.NO_DEPTH_TEST).
@@ -154,22 +165,41 @@ public class GuiRenderMaterialFinderImpl implements GuiRenderMaterialFinder {
     }
 
     static {
-        FACTORIES = new MaterialFactory[16];
-        FACTORIES[getFactoryIndex(false, false, false, false)] = new MaterialFactory(false, false, false, false);
-        FACTORIES[getFactoryIndex(false, false, true, false)] = new MaterialFactory(false, false, true, false);
-        FACTORIES[getFactoryIndex(false, true, false, false)] = new MaterialFactory(false, true, false, false);
-        FACTORIES[getFactoryIndex(false, true, true, false)] = new MaterialFactory(false, true, true, false);
-        FACTORIES[getFactoryIndex(true, false, false, false)] = new MaterialFactory(true, false, false, false);
-        FACTORIES[getFactoryIndex(true, false, true, false)] = new MaterialFactory(true, false, true, false);
-        FACTORIES[getFactoryIndex(true, true, false, false)] = new MaterialFactory(true, true, false, false);
-        FACTORIES[getFactoryIndex(true, true, true, false)] = new MaterialFactory(true, true, true, false);
-        FACTORIES[getFactoryIndex(false, false, false, true)] = new MaterialFactory(false, false, false, true);
-        FACTORIES[getFactoryIndex(false, false, true, true)] = new MaterialFactory(false, false, true, true);
-        FACTORIES[getFactoryIndex(false, true, false, true)] = new MaterialFactory(false, true, false, true);
-        FACTORIES[getFactoryIndex(false, true, true, true)] = new MaterialFactory(false, true, true, true);
-        FACTORIES[getFactoryIndex(true, false, false, true)] = new MaterialFactory(true, false, false, true);
-        FACTORIES[getFactoryIndex(true, false, true, true)] = new MaterialFactory(true, false, true, true);
-        FACTORIES[getFactoryIndex(true, true, false, true)] = new MaterialFactory(true, true, false, true);
-        FACTORIES[getFactoryIndex(true, true, true, true)] = new MaterialFactory(true, true, true, true);
+        FACTORIES = new MaterialFactory[32];
+        boolean cull = false;
+        FACTORIES[getFactoryIndex(false, false, false, false, cull)] = new MaterialFactory(false, false, false, false, cull);
+        FACTORIES[getFactoryIndex(false, false, true, false, cull)] = new MaterialFactory(false, false, true, false, cull);
+        FACTORIES[getFactoryIndex(false, true, false, false, cull)] = new MaterialFactory(false, true, false, false, cull);
+        FACTORIES[getFactoryIndex(false, true, true, false, cull)] = new MaterialFactory(false, true, true, false, cull);
+        FACTORIES[getFactoryIndex(true, false, false, false, cull)] = new MaterialFactory(true, false, false, false, cull);
+        FACTORIES[getFactoryIndex(true, false, true, false, cull)] = new MaterialFactory(true, false, true, false, cull);
+        FACTORIES[getFactoryIndex(true, true, false, false, cull)] = new MaterialFactory(true, true, false, false, cull);
+        FACTORIES[getFactoryIndex(true, true, true, false, cull)] = new MaterialFactory(true, true, true, false, cull);
+        FACTORIES[getFactoryIndex(false, false, false, true, cull)] = new MaterialFactory(false, false, false, true, cull);
+        FACTORIES[getFactoryIndex(false, false, true, true, cull)] = new MaterialFactory(false, false, true, true, cull);
+        FACTORIES[getFactoryIndex(false, true, false, true, cull)] = new MaterialFactory(false, true, false, true, cull);
+        FACTORIES[getFactoryIndex(false, true, true, true, cull)] = new MaterialFactory(false, true, true, true, cull);
+        FACTORIES[getFactoryIndex(true, false, false, true, cull)] = new MaterialFactory(true, false, false, true, cull);
+        FACTORIES[getFactoryIndex(true, false, true, true, cull)] = new MaterialFactory(true, false, true, true, cull);
+        FACTORIES[getFactoryIndex(true, true, false, true, cull)] = new MaterialFactory(true, true, false, true, cull);
+        FACTORIES[getFactoryIndex(true, true, true, true, cull)] = new MaterialFactory(true, true, true, true, cull);
+
+        cull = true;
+        FACTORIES[getFactoryIndex(false, false, false, false, cull)] = new MaterialFactory(false, false, false, false, cull);
+        FACTORIES[getFactoryIndex(false, false, true, false, cull)] = new MaterialFactory(false, false, true, false, cull);
+        FACTORIES[getFactoryIndex(false, true, false, false, cull)] = new MaterialFactory(false, true, false, false, cull);
+        FACTORIES[getFactoryIndex(false, true, true, false, cull)] = new MaterialFactory(false, true, true, false, cull);
+        FACTORIES[getFactoryIndex(true, false, false, false, cull)] = new MaterialFactory(true, false, false, false, cull);
+        FACTORIES[getFactoryIndex(true, false, true, false, cull)] = new MaterialFactory(true, false, true, false, cull);
+        FACTORIES[getFactoryIndex(true, true, false, false, cull)] = new MaterialFactory(true, true, false, false, cull);
+        FACTORIES[getFactoryIndex(true, true, true, false, cull)] = new MaterialFactory(true, true, true, false, cull);
+        FACTORIES[getFactoryIndex(false, false, false, true, cull)] = new MaterialFactory(false, false, false, true, cull);
+        FACTORIES[getFactoryIndex(false, false, true, true, cull)] = new MaterialFactory(false, false, true, true, cull);
+        FACTORIES[getFactoryIndex(false, true, false, true, cull)] = new MaterialFactory(false, true, false, true, cull);
+        FACTORIES[getFactoryIndex(false, true, true, true, cull)] = new MaterialFactory(false, true, true, true, cull);
+        FACTORIES[getFactoryIndex(true, false, false, true, cull)] = new MaterialFactory(true, false, false, true, cull);
+        FACTORIES[getFactoryIndex(true, false, true, true, cull)] = new MaterialFactory(true, false, true, true, cull);
+        FACTORIES[getFactoryIndex(true, true, false, true, cull)] = new MaterialFactory(true, true, false, true, cull);
+        FACTORIES[getFactoryIndex(true, true, true, true, cull)] = new MaterialFactory(true, true, true, true, cull);
     }
 }

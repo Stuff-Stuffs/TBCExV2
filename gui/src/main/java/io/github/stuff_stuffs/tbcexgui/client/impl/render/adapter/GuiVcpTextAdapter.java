@@ -1,8 +1,9 @@
-package io.github.stuff_stuffs.tbcexgui.client.impl.render;
+package io.github.stuff_stuffs.tbcexgui.client.impl.render.adapter;
 
 import io.github.stuff_stuffs.tbcexgui.client.api.GuiRenderMaterial;
 import io.github.stuff_stuffs.tbcexgui.client.api.GuiRenderMaterialFinder;
 import io.github.stuff_stuffs.tbcexgui.client.impl.GuiContextImpl;
+import io.github.stuff_stuffs.tbcexgui.client.impl.render.MutableGuiQuadImpl;
 import io.github.stuff_stuffs.tbcexgui.mixin.RenderPhase$MultiPhaseParametersAccessor;
 import io.github.stuff_stuffs.tbcexgui.mixin.RenderPhase$TextureAccessor;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
@@ -53,7 +54,7 @@ public class GuiVcpTextAdapter implements VertexConsumerProvider {
         @Override
         public VertexConsumer vertex(final double x, final double y, final double z) {
             quadDelegate.pos(index, (float) x, (float) y);
-            quadDelegate.depth((float) z);
+            quadDelegate.depth(index, (float) z);
             return this;
         }
 

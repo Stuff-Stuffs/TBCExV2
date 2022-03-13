@@ -20,9 +20,9 @@ public abstract class AbstractPanelWidget extends AbstractWidget {
     }
 
     @Override
-    public void resize(final double width, final double height, final int pixelWidth, final int pixelHeight) {
-        super.resize(width, height, pixelWidth, pixelHeight);
-        resizeChildren(width, height, pixelWidth, pixelHeight);
+    public void resize(final double width, final double height) {
+        super.resize(width, height);
+        resizeChildren(width, height);
     }
 
     @Override
@@ -41,5 +41,5 @@ public abstract class AbstractPanelWidget extends AbstractWidget {
 
     protected abstract void renderChildren(GuiContext context);
 
-    protected abstract void resizeChildren(double width, double height, int pixelWidth, int pixelHeight);
+    protected abstract void resizeChildren(double width, double height);
 }

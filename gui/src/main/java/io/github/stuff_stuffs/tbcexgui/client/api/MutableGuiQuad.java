@@ -15,6 +15,8 @@ public interface MutableGuiQuad extends GuiQuad {
 
     MutableGuiQuad tag(int tag);
 
+    MutableGuiQuad depth(int vertexIndex, float depth);
+
     MutableGuiQuad depth(float depth);
 
     MutableGuiQuad pos(int vertexIndex, float x, float y);

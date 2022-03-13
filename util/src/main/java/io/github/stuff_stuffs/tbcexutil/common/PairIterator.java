@@ -38,7 +38,8 @@ public interface PairIterator<L, R> {
 
             @Override
             public boolean next() {
-                while (index < inventory.size() && (index == -1 || inventory.getStack(index).isEmpty())) {
+                index++;
+                while (index < inventory.size() && inventory.getStack(index).isEmpty()) {
                     index++;
                 }
                 return index < inventory.size();

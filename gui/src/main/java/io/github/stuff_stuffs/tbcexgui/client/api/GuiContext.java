@@ -2,6 +2,8 @@ package io.github.stuff_stuffs.tbcexgui.client.api;
 
 import io.github.stuff_stuffs.tbcexgui.client.impl.render.ScissorData;
 import io.github.stuff_stuffs.tbcexutil.common.Vec2d;
+import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
@@ -22,7 +24,7 @@ public interface GuiContext {
             public boolean transform(final MutableGuiQuad quad) {
                 for (int i = 0; i < 4; i++) {
                     quad.pos(i, (float) (quad.x(i) * xScale), (float) (quad.y(i) * yScale));
-                    quad.depth((float) (quad.depth() * zScale));
+                    quad.depth(i, (float) (quad.depthByIndex(i) * zScale));
                 }
                 return true;
             }
@@ -47,8 +49,8 @@ public interface GuiContext {
             public boolean transform(final MutableGuiQuad quad) {
                 for (int i = 0; i < 4; i++) {
                     quad.pos(i, (float) (quad.x(i) + x), (float) (quad.y(i) + y));
+                    quad.depth(i, (float) (quad.depthByIndex(i) + z));
                 }
-                quad.depth((float) (quad.depth() + z));
                 return true;
             }
 
@@ -76,14 +78,12 @@ public interface GuiContext {
         pushGuiTransform(new GuiTransform() {
             @Override
             public boolean transform(final MutableGuiQuad quad) {
-                float avg = 0;
                 for (int i = 0; i < 4; i++) {
-                    vec.set(quad.x(i), quad.y(i), quad.depth(), 1);
+                    vec.set(quad.x(i), quad.y(i), quad.depthByIndex(i), 1);
                     vec.transform(matrix);
                     quad.pos(i, vec.getX(), vec.getY());
-                    avg += vec.getZ();
+                    quad.depth(i, vec.getZ());
                 }
-                quad.depth(avg * 0.25F);
                 return true;
             }
 
@@ -121,6 +121,8 @@ public interface GuiContext {
     GuiQuadEmitter getEmitter();
 
     GuiTextRenderer getTextRenderer();
+
+    void renderItem(ItemStack stack, int light, ModelTransformation.Mode mode);
 
     void addTooltip(List<OrderedText> components);
 

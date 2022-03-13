@@ -33,9 +33,9 @@ public class InvisiblePanelWidget<C extends Collection<T>, T extends Widget> ext
     }
 
     @Override
-    protected void resizeChildren(final double width, final double height, final int pixelWidth, final int pixelHeight) {
+    protected void resizeChildren(final double width, final double height) {
         for (final T child : children) {
-            child.resize(width, height, pixelWidth, pixelHeight);
+            child.resize(width, height);
         }
     }
 

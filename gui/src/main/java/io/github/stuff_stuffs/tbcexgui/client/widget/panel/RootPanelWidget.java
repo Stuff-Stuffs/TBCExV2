@@ -33,10 +33,10 @@ public class RootPanelWidget extends AbstractWidget {
     }
 
     @Override
-    public void resize(final double width, final double height, final int pixelWidth, final int pixelHeight) {
-        super.resize(width, height, pixelWidth, pixelHeight);
+    public void resize(final double width, final double height) {
+        super.resize(width, height);
         for (final PositionedWidget widget : widgets.values()) {
-            widget.resize(width, height, pixelWidth, pixelHeight);
+            widget.resize(width, height);
         }
     }
 

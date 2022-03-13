@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 public interface GuiRenderMaterialFinder {
     GuiRenderMaterialFinder depthTest(boolean depthTest);
 
+    GuiRenderMaterialFinder cull(boolean cull);
+
     GuiRenderMaterialFinder translucent(boolean translucent);
 
     GuiRenderMaterialFinder ignoreTexture(boolean ignore);
@@ -23,6 +25,6 @@ public interface GuiRenderMaterialFinder {
     @Nullable GuiRenderMaterial find(Identifier id);
 
     static GuiRenderMaterialFinder finder() {
-        return new GuiRenderMaterialFinderImpl(true, false, false, false, "position_color_tex", "position_color", SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
+        return new GuiRenderMaterialFinderImpl(true, false, false, false, false, "position_color_tex", "position_color", SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
     }
 }

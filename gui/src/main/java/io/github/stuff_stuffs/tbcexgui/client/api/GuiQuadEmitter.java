@@ -11,6 +11,9 @@ public interface GuiQuadEmitter extends MutableGuiQuad {
     GuiQuadEmitter tag(int tag);
 
     @Override
+    GuiQuadEmitter depth(int vertexIndex, float depth);
+
+    @Override
     GuiQuadEmitter depth(float depth);
 
     @Override
