@@ -9,6 +9,7 @@ import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.Battl
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.state.BattleState;
 import io.github.stuff_stuffs.tbcexutil.common.Tracer;
 import io.github.stuff_stuffs.tbcexutil.common.event.map.MutEventMap;
+import net.minecraft.util.math.BlockPos;
 
 public interface BattleParticipantState extends BattleParticipantStateView {
     @Override
@@ -27,6 +28,8 @@ public interface BattleParticipantState extends BattleParticipantStateView {
 
     @Override
     BattleParticipantHealthContainer getHealthContainer();
+
+    boolean setPos(BlockPos pos, Tracer<ActionTrace> tracer);
 
     boolean setTeam(BattleParticipantTeam team, Tracer<ActionTrace> tracer);
 }

@@ -62,6 +62,12 @@ public class BattleParticipantEffectContainerImpl implements BattleParticipantEf
         }
     }
 
+    public void deinit(Tracer<ActionTrace> tracer) {
+        for (BattleParticipantEffect effect : effects.values()) {
+            effect.deinit(tracer);
+        }
+    }
+
     @Override
     public void addEffect(final BattleParticipantEffect effect, Tracer<ActionTrace> tracer) {
         if (!init) {

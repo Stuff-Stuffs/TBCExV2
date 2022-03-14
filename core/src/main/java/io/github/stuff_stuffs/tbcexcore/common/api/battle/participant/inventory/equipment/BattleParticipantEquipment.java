@@ -3,10 +3,12 @@ package io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.ActionTrace;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.action.BattleParticipantAction;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantEquipmentSlot;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantState;
 import io.github.stuff_stuffs.tbcexutil.common.CodecUtil;
+import io.github.stuff_stuffs.tbcexutil.common.Tracer;
 
 import java.util.List;
 import java.util.Set;
@@ -30,9 +32,9 @@ public interface BattleParticipantEquipment {
 
     Set<BattleParticipantEquipmentSlot> getBlockedSlots(BattleParticipantEquipmentSlot slot);
 
-    void init(BattleParticipantEquipmentSlot slot, BattleParticipantState state);
+    void init(BattleParticipantEquipmentSlot slot, BattleParticipantState state, Tracer<ActionTrace> tracer);
 
-    void deinit();
+    void deinit(Tracer<ActionTrace> tracer);
 
     default List<BattleParticipantAction> getActions() {
         return List.of();

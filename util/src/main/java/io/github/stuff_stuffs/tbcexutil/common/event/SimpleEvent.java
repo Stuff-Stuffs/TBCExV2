@@ -11,7 +11,6 @@ public final class SimpleEvent<V, M> implements AbstractEvent<V, M> {
     private final Map<EventListenerKey, M> eventsByKey = new Reference2ReferenceOpenHashMap<>();
     private final Function<V, M> viewConverter;
     private final InvokerFactory<M> invokerFactory;
-    private final Class<M> clazz;
     private final Runnable enter;
     private final Runnable exit;
     private M invoker;
@@ -20,7 +19,6 @@ public final class SimpleEvent<V, M> implements AbstractEvent<V, M> {
     public SimpleEvent(final Function<V, M> viewConverter, final InvokerFactory<M> invokerFactory, final Class<M> clazz, final Runnable enter, final Runnable exit) {
         this.viewConverter = viewConverter;
         this.invokerFactory = invokerFactory;
-        this.clazz = clazz;
         muts = (M[]) Array.newInstance(clazz, 0);
         this.enter = enter;
         this.exit = exit;
@@ -56,7 +54,7 @@ public final class SimpleEvent<V, M> implements AbstractEvent<V, M> {
     @Override
     public void remove(final EventListenerKey key) {
         eventsByKey.remove(key);
-        muts = eventsByKey.values().toArray(l -> (M[]) Array.newInstance(clazz, l));
+        muts = eventsByKey.values().toArray(l -> (M[]) Array.newInstance(muts.getClass().getComponentType(), l));
         invoker = invokerFactory.createInvoker(muts, enter, exit);
     }
 }

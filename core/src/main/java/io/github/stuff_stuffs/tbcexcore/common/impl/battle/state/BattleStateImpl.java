@@ -11,6 +11,7 @@ import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.Batt
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.state.BattleState;
 import io.github.stuff_stuffs.tbcexcore.common.impl.battle.effect.BattleEffectContainerImpl;
 import io.github.stuff_stuffs.tbcexcore.common.impl.battle.participant.state.BattleParticipantStateImpl;
+import io.github.stuff_stuffs.tbcexutil.common.BattleBounds;
 import io.github.stuff_stuffs.tbcexutil.common.CodecUtil;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
 import io.github.stuff_stuffs.tbcexutil.common.Tracer;
@@ -26,6 +27,7 @@ public class BattleStateImpl implements BattleState {
     private final Object2ReferenceLinkedOpenHashMap<BattleParticipantHandle, BattleParticipantStateImpl> participantStateByHandle;
     private final BattleEffectContainerImpl effectContainer;
     private boolean init = false;
+    private BattleBounds bounds = new BattleBounds(0, 0, 0, 0, 0, 0);
     private BattleHandle handle;
 
     public BattleStateImpl() {
@@ -41,7 +43,7 @@ public class BattleStateImpl implements BattleState {
         this.effectContainer = effectContainer;
     }
 
-    public void init(final BattleHandle handle, Tracer<ActionTrace> tracer) {
+    public void init(final BattleHandle handle, final Tracer<ActionTrace> tracer) {
         if (!init) {
             this.handle = handle;
             init = true;
@@ -77,7 +79,23 @@ public class BattleStateImpl implements BattleState {
     }
 
     @Override
-    public boolean join(final BattleParticipantState state, final BattleParticipantHandle handle, Tracer<ActionTrace> tracer) {
+    public BattleBounds getBounds() {
+        return bounds;
+    }
+
+    @Override
+    public boolean setBounds(final BattleBounds bounds, final Tracer<ActionTrace> tracer) {
+        if (getEventMap().getEventMut(BattleEvents.BATTLE_PRE_SET_BOUNDS_EVENT).getInvoker().onSetBounds(this, bounds, tracer)) {
+            final BattleBounds old = this.bounds;
+            this.bounds = bounds;
+            getEventMap().getEventMut(BattleEvents.BATTLE_POST_SET_BOUNDS_EVENT).getInvoker().onSetBounds(this, old, tracer);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean join(final BattleParticipantState state, final BattleParticipantHandle handle, final Tracer<ActionTrace> tracer) {
         if (!init) {
             throw new TBCExException("Attempted to access not initialized battle!");
         }

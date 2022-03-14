@@ -82,14 +82,20 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
         return coded;
     }
 
-    public void init(final BattleParticipantHandle handle, final BattleParticipantState state) {
+    public void init(final BattleParticipantHandle handle, final BattleParticipantState state, Tracer<ActionTrace> tracer) {
         if (!init) {
             this.handle = handle;
             this.state = state;
             init = true;
             for (final BattleParticipantEquipmentSlot slot : handleBySlot.keySet()) {
-                equipmentBySlot.get(slot).init(slot, state);
+                equipmentBySlot.get(slot).init(slot, state, tracer);
             }
+        }
+    }
+
+    public void deinit(Tracer<ActionTrace> tracer) {
+        for (BattleParticipantEquipmentSlot slot : handleBySlot.keySet()) {
+            equipmentBySlot.get(slot).deinit(tracer);
         }
     }
 
@@ -142,6 +148,9 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
 
     @Override
     public BattleParticipantInventoryHandle give(final BattleParticipantItemStack stack, final Tracer<ActionTrace> tracer) {
+        if (!init) {
+            throw new TBCExException("Tried to access inventory before it was initialized");
+        }
         BattleParticipantInventoryHandle handle = null;
         for (final Long2ObjectMap.Entry<BattleParticipantItemStack> entry : stacks.long2ObjectEntrySet()) {
             if (entry.getValue().canCombine(stack)) {
@@ -160,6 +169,9 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
 
     @Override
     public boolean equip(final BattleParticipantInventoryHandle handle, final BattleParticipantEquipmentSlot slot, final Tracer<ActionTrace> tracer) {
+        if (!init) {
+            throw new TBCExException("Tried to access inventory before it was initialized");
+        }
         if (equipmentBySlot.get(slot) != null) {
             return false;
         }
@@ -179,12 +191,15 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
         }
         equipmentBySlot.put(slot, equipment);
         handleBySlot.put(slot, handle.getId());
-        equipment.init(slot, state);
+        equipment.init(slot, state, tracer);
         return true;
     }
 
     @Override
     public boolean unequip(final BattleParticipantEquipmentSlot slot, final Tracer<ActionTrace> tracer) {
+        if (!init) {
+            throw new TBCExException("Tried to access inventory before it was initialized");
+        }
         if (equipmentBySlot.get(slot) == null) {
             return false;
         }
@@ -192,7 +207,7 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
         if (tryUnequip) {
             final BattleParticipantEquipment equipment = equipmentBySlot.remove(slot);
             handleBySlot.removeLong(slot);
-            equipment.deinit();
+            equipment.deinit(tracer);
             return true;
         }
         return false;
@@ -222,6 +237,9 @@ public class BattleParticipantInventoryImpl implements BattleParticipantInventor
 
     @Override
     public boolean isEquipped(final BattleParticipantEquipmentSlot slot) {
+        if (!init) {
+            throw new TBCExException("Tried to access inventory before it was initialized");
+        }
         return equipmentBySlot.containsKey(slot);
     }
 

@@ -6,11 +6,13 @@ import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.health.Bat
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantInventoryView;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.BattleParticipantStat;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.state.BattleStateView;
+import io.github.stuff_stuffs.tbcexutil.common.BattleParticipantBounds;
 import io.github.stuff_stuffs.tbcexutil.common.event.AbstractEvent;
 import io.github.stuff_stuffs.tbcexutil.common.event.EventKey;
 import io.github.stuff_stuffs.tbcexutil.common.event.map.EventMap;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.function.BiFunction;
 
@@ -37,8 +39,12 @@ public interface BattleParticipantStateView {
 
     BattleParticipantTeam getTeam();
 
+    BattleParticipantBounds getBounds();
+
+    BlockPos getPos();
+
     interface EventRegisterer {
-        void register(BattleStateView.EventInitializer initializer);
+        void register(EventInitializer initializer);
     }
 
     interface EventInitializer {

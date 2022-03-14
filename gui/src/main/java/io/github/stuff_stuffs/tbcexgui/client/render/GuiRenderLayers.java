@@ -1,7 +1,6 @@
 package io.github.stuff_stuffs.tbcexgui.client.render;
 
 import com.mojang.datafixers.util.Pair;
-import io.github.stuff_stuffs.tbcexutil.common.CachingFunction;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
@@ -13,7 +12,6 @@ import net.minecraft.util.Identifier;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 //TODO fix guis in fabulous graphics mode
 public final class GuiRenderLayers extends RenderPhase {
@@ -37,9 +35,6 @@ public final class GuiRenderLayers extends RenderPhase {
     private static final Map<Identifier, Texture> TEXTURE_MAP = new Object2ReferenceOpenHashMap<>();
     private static final Map<RenderLayer, BufferBuilder> BUFFERS = new Reference2ObjectOpenHashMap<>();
     private static final VertexConsumerProvider.Immediate VERTEX_CONSUMERS = VertexConsumerProvider.immediate(BUFFERS, new BufferBuilder(1024));
-    private static final Function<Identifier, RenderLayer> POS_COLOUR_TEX_LAYER_TRANSPARENT = new CachingFunction<>(id -> RenderLayer.of("tbcex_gui_pos_colour_transparent", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS, 1024, false, true, RenderLayer.MultiPhaseParameters.builder().writeMaskState(COLOR_MASK).target(TRANSLUCENT_TARGET).transparency(TRANSLUCENT_TRANSPARENCY).shader(RenderPhase.POSITION_COLOR_TEXTURE_SHADER).texture(getTexture(id)).build(false)));
-    private static final Shader POS_COLOUR_SHADER = new Shader(GameRenderer::getPositionColorShader);
-    public static final RenderLayer POSITION_COLOUR_TRANSPARENT_LAYER = RenderLayer.of("tbcex_gui_pos_colour_transparent", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS, 1024, false, true, RenderLayer.MultiPhaseParameters.builder().writeMaskState(COLOR_MASK).target(TRANSLUCENT_TARGET).transparency(TRANSLUCENT_TRANSPARENCY).shader(POS_COLOUR_SHADER).build(false));
     private static ResourceManager RESOURCE_MANAGER;
 
     private GuiRenderLayers(final String name, final Runnable beginAction, final Runnable endAction) {
@@ -100,10 +95,6 @@ public final class GuiRenderLayers extends RenderPhase {
         for (final Pair<String, VertexFormat> shader : currentShadersTexture) {
             createShader(shader.getFirst(), shader.getSecond());
         }
-    }
-
-    public static RenderLayer getPositionColourTextureLayer(final Identifier texture) {
-        return POS_COLOUR_TEX_LAYER_TRANSPARENT.apply(texture);
     }
 
     private static final class ShaderInfo {
