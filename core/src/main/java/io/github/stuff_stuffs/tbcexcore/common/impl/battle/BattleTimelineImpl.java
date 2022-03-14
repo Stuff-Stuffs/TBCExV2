@@ -30,7 +30,7 @@ public class BattleTimelineImpl implements BattleTimeline {
     public void init(final BattleHandle handle) {
         if (!init) {
             this.handle = handle;
-            final Tracer<ActionTrace> tracer = new Tracer<>(i -> false, debugPredicate);
+            final Tracer<ActionTrace> tracer = new Tracer<>(ActionTrace.TRACE, i -> false);
             state.init(handle, tracer);
             for (final BattleAction action : actions) {
                 action.apply(state, tracer);
@@ -49,7 +49,7 @@ public class BattleTimelineImpl implements BattleTimeline {
                 actions.remove(actions.size() - 1);
             }
             state = new BattleStateImpl();
-            final Tracer<ActionTrace> tracer = new Tracer<>(i -> false, debugPredicate);
+            final Tracer<ActionTrace> tracer = new Tracer<>(ActionTrace.TRACE, i -> false);
             state.init(handle, tracer);
             for (final BattleAction action : actions) {
                 action.apply(state, tracer);

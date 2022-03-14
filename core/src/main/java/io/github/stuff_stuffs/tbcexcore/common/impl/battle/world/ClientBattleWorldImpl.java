@@ -62,7 +62,7 @@ public class ClientBattleWorldImpl implements BattleWorld {
             }
             final BattleTimelineImpl timeline = (BattleTimelineImpl) battle.getTimeline();
             timeline.trim(size);
-            Tracer<ActionTrace> tracer = new Tracer<>(i -> false, debugPredicate);
+            Tracer<ActionTrace> tracer = new Tracer<>(ActionTrace.TRACE, i -> false);
             for (final BattleAction action : actions) {
                 timeline.push(action, tracer);
             }

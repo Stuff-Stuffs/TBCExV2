@@ -3,6 +3,7 @@ package io.github.stuff_stuffs.tbcexcore.common.impl.battle.world;
 import io.github.stuff_stuffs.tbcexcore.common.TBCExCore;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleWorld;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.ActionTrace;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.BattleAction;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.BattleParticipant;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantHandle;
@@ -135,7 +136,7 @@ public class ServerBattleWorldImpl implements BattleWorld {
     public void tryJoin(final BattleParticipant participant, final BattleHandle handle) {
         final BattleImpl battle = getBattle(handle);
         if (battle != null) {
-            ((BattleTimelineImpl) battle.getTimeline()).push(new ParticipantJoinBattleAction(new BattleParticipantHandle(handle, ((Entity) participant).getUuid()), new BattleParticipantStateImpl(participant, participant.tbcex$getRestoreData(handle))), new Tracer<>(i -> false, debugPredicate));
+            ((BattleTimelineImpl) battle.getTimeline()).push(new ParticipantJoinBattleAction(new BattleParticipantHandle(handle, ((Entity) participant).getUuid()), new BattleParticipantStateImpl(participant, participant.tbcex$getRestoreData(handle))), new Tracer<>(ActionTrace.TRACE, i -> false));
             if (participant instanceof ServerPlayerEntity entity) {
                 TBCExCore.setupPlayerToJoinBattle(entity, handle);
             }
