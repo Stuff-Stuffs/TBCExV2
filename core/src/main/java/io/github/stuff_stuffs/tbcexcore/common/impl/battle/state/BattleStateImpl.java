@@ -85,6 +85,9 @@ public class BattleStateImpl implements BattleState {
 
     @Override
     public boolean setBounds(final BattleBounds bounds, final Tracer<ActionTrace> tracer) {
+        if (!checkNewBounds(bounds)) {
+            return false;
+        }
         if (getEventMap().getEventMut(BattleEvents.BATTLE_PRE_SET_BOUNDS_EVENT).getInvoker().onSetBounds(this, bounds, tracer)) {
             final BattleBounds old = this.bounds;
             this.bounds = bounds;
@@ -92,6 +95,15 @@ public class BattleStateImpl implements BattleState {
             return true;
         }
         return false;
+    }
+
+    private boolean checkNewBounds(final BattleBounds bounds) {
+        for (final BattleParticipantStateImpl state : participantStateByHandle.values()) {
+            if (!bounds.isValid(state.getBounds())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

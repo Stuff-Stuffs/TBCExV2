@@ -1,6 +1,7 @@
 package io.github.stuff_stuffs.tbcexutil.common;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3i;
 
 import java.util.stream.IntStream;
@@ -13,6 +14,7 @@ public final class BattleBounds {
     public final int maxX;
     public final int maxY;
     public final int maxZ;
+    private final Box box;
 
     private BattleBounds(final IntStream stream) {
         final int[] arr = stream.toArray();
@@ -25,6 +27,7 @@ public final class BattleBounds {
         maxX = arr[3];
         maxY = arr[4];
         maxZ = arr[5];
+        box = new Box(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     public BattleBounds(final int minX, final int minY, final int minZ, final int maxX, final int maxY, final int maxZ) {
@@ -37,6 +40,7 @@ public final class BattleBounds {
         this.maxX = maxX;
         this.maxY = maxY;
         this.maxZ = maxZ;
+        box = new Box(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     public BattleBounds setBase(final int x, final int y, final int z) {
@@ -73,5 +77,9 @@ public final class BattleBounds {
 
     private IntStream boundStream() {
         return IntStream.of(minX, minY, minZ, maxX, maxY, maxZ);
+    }
+
+    public boolean isValid(final BattleParticipantBounds bounds) {
+        return bounds.isFullyInside(box);
     }
 }

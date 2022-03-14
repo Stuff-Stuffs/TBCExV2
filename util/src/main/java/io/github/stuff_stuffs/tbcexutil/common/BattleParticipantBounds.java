@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -119,6 +120,33 @@ public final class BattleParticipantBounds implements Iterable<BattleParticipant
             return new CollisionResult(intersectionPart, intersection);
         }
         return null;
+    }
+
+    public boolean isFullyInside(final Box box) {
+        for (final Part part : parts.values()) {
+            if (!checkBox(box, part.box)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean checkBox(final Box first, final Box second) {
+        final Direction.AxisDirection[] axisDirections = Direction.AxisDirection.values();
+        for (final Direction.AxisDirection x : axisDirections) {
+            for (final Direction.AxisDirection y : axisDirections) {
+                for (final Direction.AxisDirection z : axisDirections) {
+                    if (!first.contains(getPoint(Direction.Axis.X, x, second), getPoint(Direction.Axis.Y, y, second), getPoint(Direction.Axis.Z, z, second))) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private static double getPoint(final Direction.Axis axis, final Direction.AxisDirection direction, final Box box) {
+        return direction == Direction.AxisDirection.POSITIVE ? box.getMax(axis) : box.getMin(axis);
     }
 
     @NotNull
