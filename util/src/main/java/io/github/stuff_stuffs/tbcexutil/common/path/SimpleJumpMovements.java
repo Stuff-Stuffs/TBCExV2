@@ -16,77 +16,82 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 public enum SimpleJumpMovements implements MovementType {
-    NORTH_JUMP {
+    NORTH_JUMP(MovementTypes.JUMP_NORTH) {
         @Override
         public @Nullable Movement modify(final BattleParticipantBounds bounds, final BlockPos pos, final Box pathBounds, final World world, final WorldShapeCache cache) {
             if (MovementType.doesCollideWith(bounds.offset(0, -1, 0), cache) && !MovementType.doesCollideWith(bounds.offset(0, 1, 0), cache) && !MovementType.doesCollideWith(bounds.offset(0, 1, -1), cache) && MovementType.doesCollideWith(bounds.offset(0, 0, -1), cache)) {
-                return SimpleJumpMovements.create(pos, pos.add(0, 1, -1), true, NORTH_JUMP);
+                return SimpleJumpMovements.create(pos, pos.add(0, 1, -1), true, movementType);
             }
             return null;
         }
-    }, SOUTH_JUMP {
+    }, SOUTH_JUMP(MovementTypes.JUMP_SOUTH) {
         @Override
         public @Nullable Movement modify(final BattleParticipantBounds bounds, final BlockPos pos, final Box pathBounds, final World world, final WorldShapeCache cache) {
             if (MovementType.doesCollideWith(bounds.offset(0, -1, 0), cache) && !MovementType.doesCollideWith(bounds.offset(0, 1, 0), cache) && !MovementType.doesCollideWith(bounds.offset(0, 1, 1), cache) && MovementType.doesCollideWith(bounds.offset(0, 0, 1), cache)) {
-                return SimpleJumpMovements.create(pos, pos.add(0, 1, 1), true, SOUTH_JUMP);
+                return SimpleJumpMovements.create(pos, pos.add(0, 1, 1), true, movementType);
             }
             return null;
         }
-    }, EAST_JUMP {
+    }, EAST_JUMP(MovementTypes.JUMP_EAST) {
         @Override
         public @Nullable Movement modify(final BattleParticipantBounds bounds, final BlockPos pos, final Box pathBounds, final World world, final WorldShapeCache cache) {
             if (MovementType.doesCollideWith(bounds.offset(0, -1, 0), cache) && !MovementType.doesCollideWith(bounds.offset(0, 1, 0), cache) && !MovementType.doesCollideWith(bounds.offset(1, 1, 0), cache) && MovementType.doesCollideWith(bounds.offset(1, 0, 0), cache)) {
-                return SimpleJumpMovements.create(pos, pos.add(1, 1, 0), true, EAST_JUMP);
+                return SimpleJumpMovements.create(pos, pos.add(1, 1, 0), true, movementType);
             }
             return null;
         }
-    }, WEST_JUMP {
+    }, WEST_JUMP(MovementTypes.JUMP_WEST) {
         @Override
         public @Nullable Movement modify(final BattleParticipantBounds bounds, final BlockPos pos, final Box pathBounds, final World world, final WorldShapeCache cache) {
             if (MovementType.doesCollideWith(bounds.offset(0, -1, 0), cache) && !MovementType.doesCollideWith(bounds.offset(0, 1, 0), cache) && !MovementType.doesCollideWith(bounds.offset(-1, 1, 0), cache) && MovementType.doesCollideWith(bounds.offset(-1, 0, 0), cache)) {
-                return SimpleJumpMovements.create(pos, pos.add(-1, 1, 0), true, WEST_JUMP);
+                return SimpleJumpMovements.create(pos, pos.add(-1, 1, 0), true, movementType);
             }
             return null;
         }
-    }, NORTH_FALL {
+    }, NORTH_FALL(MovementTypes.FALL_NORTH) {
         @Override
         public @Nullable Movement modify(final BattleParticipantBounds bounds, final BlockPos pos, final Box pathBounds, final World world, final WorldShapeCache cache) {
             if (MovementType.doesCollideWith(bounds.offset(0, -1, 0), cache) && !MovementType.doesCollideWith(bounds.offset(0, 0, -1), cache) && !MovementType.doesCollideWith(bounds.offset(0, -1, -1), cache)) {
                 final boolean validEnding = MovementType.doesCollideWith(bounds.offset(0, -2, -1), cache);
-                return SimpleJumpMovements.create(pos, pos.add(0, -1, -1), validEnding, NORTH_FALL);
+                return SimpleJumpMovements.create(pos, pos.add(0, -1, -1), validEnding, movementType);
             }
             return null;
         }
-    }, SOUTH_FALL {
+    }, SOUTH_FALL(MovementTypes.FALL_SOUTH) {
         @Override
         public @Nullable Movement modify(final BattleParticipantBounds bounds, final BlockPos pos, final Box pathBounds, final World world, final WorldShapeCache cache) {
             if (MovementType.doesCollideWith(bounds.offset(0, -1, 0), cache) && !MovementType.doesCollideWith(bounds.offset(0, 0, 1), cache) && !MovementType.doesCollideWith(bounds.offset(0, -1, 1), cache)) {
                 final boolean validEnding = MovementType.doesCollideWith(bounds.offset(0, -2, 1), cache);
-                return SimpleJumpMovements.create(pos, pos.add(0, -1, 1), validEnding, SOUTH_FALL);
+                return SimpleJumpMovements.create(pos, pos.add(0, -1, 1), validEnding, movementType);
             }
             return null;
         }
-    }, EAST_FALL {
+    }, EAST_FALL(MovementTypes.FALL_EAST) {
         @Override
         public @Nullable Movement modify(final BattleParticipantBounds bounds, final BlockPos pos, final Box pathBounds, final World world, final WorldShapeCache cache) {
             if (MovementType.doesCollideWith(bounds.offset(0, -1, 0), cache) && !MovementType.doesCollideWith(bounds.offset(1, 0, 0), cache) && !MovementType.doesCollideWith(bounds.offset(1, -1, 0), cache)) {
                 final boolean validEnding = MovementType.doesCollideWith(bounds.offset(1, -2, 0), cache);
-                return SimpleJumpMovements.create(pos, pos.add(1, -1, 0), validEnding, EAST_FALL);
+                return SimpleJumpMovements.create(pos, pos.add(1, -1, 0), validEnding, movementType);
             }
             return null;
         }
-    }, WEST_FALL {
+    }, WEST_FALL(MovementTypes.FALL_WEST) {
         @Override
         public @Nullable Movement modify(final BattleParticipantBounds bounds, final BlockPos pos, final Box pathBounds, final World world, final WorldShapeCache cache) {
             if (MovementType.doesCollideWith(bounds.offset(0, -1, 0), cache) && !MovementType.doesCollideWith(bounds.offset(-1, 0, 0), cache) && !MovementType.doesCollideWith(bounds.offset(-1, -1, 0), cache)) {
                 final boolean validEnding = MovementType.doesCollideWith(bounds.offset(-1, -2, 0), cache);
-                return SimpleJumpMovements.create(pos, pos.add(-1, -1, 0), validEnding, WEST_FALL);
+                return SimpleJumpMovements.create(pos, pos.add(-1, -1, 0), validEnding, movementType);
             }
             return null;
         }
     };
+    protected final MovementTypes.RegisteredMovementType movementType;
 
-    private static Movement create(final BlockPos start, final BlockPos end, final boolean validEnding, final MovementType self) {
+    SimpleJumpMovements(final MovementTypes.RegisteredMovementType movementType) {
+        this.movementType = movementType;
+    }
+
+    private static Movement create(final BlockPos start, final BlockPos end, final boolean validEnding, final MovementTypes.RegisteredMovementType self) {
         return new Simple(start, end, validEnding, self);
     }
 
@@ -116,7 +121,7 @@ public enum SimpleJumpMovements implements MovementType {
         final boolean validEnding = Codec.BOOL.parse(ops, mapLike.get("valid_ending")).getOrThrow(false, s -> {
             throw new RuntimeException(s);
         });
-        return new Simple(startPos, endPos, validEnding, this);
+        return new Simple(startPos, endPos, validEnding, movementType);
     }
 
     private static final class Simple implements Movement {
@@ -126,9 +131,9 @@ public enum SimpleJumpMovements implements MovementType {
         private final BlockPos delta;
         private final double length;
         private final boolean validEnding;
-        private final MovementType type;
+        private final MovementTypes.RegisteredMovementType type;
 
-        private Simple(final BlockPos start, final BlockPos end, final boolean validEnding, final MovementType type) {
+        private Simple(final BlockPos start, final BlockPos end, final boolean validEnding, final MovementTypes.RegisteredMovementType type) {
             this.start = start;
             this.end = end;
             this.type = type;
@@ -176,13 +181,13 @@ public enum SimpleJumpMovements implements MovementType {
         }
 
         @Override
-        public MovementType getType() {
+        public MovementTypes.RegisteredMovementType getType() {
             return type;
         }
 
         @Override
         public Set<MovementFlag> getFlags() {
-            return start.getY() - end.getY() == 1 ? FALL_FLAGS : Movement.super.getFlags();
+            return delta.getY() != 0 ? FALL_FLAGS : Set.of();
         }
     }
 }

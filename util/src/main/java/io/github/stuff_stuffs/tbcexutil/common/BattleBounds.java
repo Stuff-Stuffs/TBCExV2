@@ -82,4 +82,8 @@ public final class BattleBounds {
     public boolean isValid(final BattleParticipantBounds bounds) {
         return bounds.isFullyInside(box);
     }
+
+    public Box getBox() {
+        return box;
+    }
 }

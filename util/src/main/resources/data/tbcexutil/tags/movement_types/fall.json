@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "tbcexutil:fall",
+    "tbcexutil:fall_north",
+    "tbcexutil:fall_east",
+    "tbcexutil:fall_south",
+    "tbcexutil:fall_west"
+  ]
+}

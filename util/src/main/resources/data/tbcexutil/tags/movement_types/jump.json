@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "tbcexutil:jump_north",
+    "tbcexutil:jump_east",
+    "tbcexutil:jump_south",
+    "tbcexutil:jump_west"
+  ]
+}

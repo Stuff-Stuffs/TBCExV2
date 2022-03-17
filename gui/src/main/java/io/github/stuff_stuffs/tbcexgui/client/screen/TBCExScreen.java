@@ -5,6 +5,7 @@ import io.github.stuff_stuffs.tbcexgui.client.api.GuiInputContext;
 import io.github.stuff_stuffs.tbcexgui.client.api.RawCharTypeScreen;
 import io.github.stuff_stuffs.tbcexgui.client.impl.GuiContextImpl;
 import io.github.stuff_stuffs.tbcexgui.client.render.GuiRenderLayers;
+import io.github.stuff_stuffs.tbcexgui.client.widget.AbstractWidget;
 import io.github.stuff_stuffs.tbcexgui.client.widget.Widget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
@@ -88,15 +89,20 @@ public abstract class TBCExScreen extends Screen implements RawCharTypeScreen {
         context.draw();
         matrices.pop();
         RenderSystem.setProjectionMatrix(prevProjection);
+        AbstractWidget.processEvents(context, event -> {
+            if (event instanceof GuiInputContext.KeyPress keyPress) {
+                if (keyPress.keyCode == GLFW.GLFW_KEY_ESCAPE && shouldCloseOnEsc()) {
+                    close();
+                    return true;
+                }
+            }
+            return false;
+        });
         inputEvents.clear();
     }
 
     @Override
     public boolean keyPressed(final int keyCode, final int scanCode, final int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE && shouldCloseOnEsc()) {
-            close();
-            return true;
-        }
         inputEvents.add(new GuiInputContext.KeyPress(keyCode, (modifiers & GLFW.GLFW_MOD_SHIFT) != 0, (modifiers & GLFW.GLFW_MOD_ALT) != 0, (modifiers & GLFW.GLFW_MOD_CONTROL) != 0, (modifiers & GLFW.GLFW_MOD_CAPS_LOCK) != 0, (modifiers & GLFW.GLFW_MOD_NUM_LOCK) != 0));
         return true;
     }

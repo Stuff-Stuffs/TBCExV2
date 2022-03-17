@@ -12,42 +12,48 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public enum DiagonalMovements implements MovementType {
-    NORTH_EAST {
+    NORTH_EAST(MovementTypes.WALK_NORTH_EAST) {
         @Override
         public @Nullable Movement modify(final BattleParticipantBounds bounds, final BlockPos pos, final Box pathBounds, final World world, final WorldShapeCache cache) {
             if (MovementType.doesCollideWith(bounds.offset(0, -1, 0), cache) && MovementType.doesCollideWith(bounds.offset(1, -1, -1), cache) && !MovementType.doesCollideWith(bounds.offset(1, 0, 0), cache) && !MovementType.doesCollideWith(bounds.offset(0, 0, -1), cache) && !MovementType.doesCollideWith(bounds.offset(1, 0, -1), cache)) {
-                return DiagonalMovements.create(pos, pos.add(1, 0, -1), NORTH_EAST);
+                return create(pos, pos.add(1, 0, -1));
             }
             return null;
         }
     },
-    NORTH_WEST {
+    NORTH_WEST(MovementTypes.WALK_NORTH_WEST) {
         @Override
         public @Nullable Movement modify(final BattleParticipantBounds bounds, final BlockPos pos, final Box pathBounds, final World world, final WorldShapeCache cache) {
             if (MovementType.doesCollideWith(bounds.offset(0, -1, 0), cache) && MovementType.doesCollideWith(bounds.offset(-1, -1, -1), cache) && !MovementType.doesCollideWith(bounds.offset(-1, 0, 0), cache) && !MovementType.doesCollideWith(bounds.offset(0, 0, -1), cache) && !MovementType.doesCollideWith(bounds.offset(-1, 0, -1), cache)) {
-                return DiagonalMovements.create(pos, pos.add(-1, 0, -1), NORTH_WEST);
+                return create(pos, pos.add(-1, 0, -1));
             }
             return null;
         }
     },
-    SOUTH_EAST {
+    SOUTH_EAST(MovementTypes.WALK_SOUTH_EAST) {
         @Override
         public @Nullable Movement modify(final BattleParticipantBounds bounds, final BlockPos pos, final Box pathBounds, final World world, final WorldShapeCache cache) {
             if (MovementType.doesCollideWith(bounds.offset(0, -1, 0), cache) && MovementType.doesCollideWith(bounds.offset(1, -1, 1), cache) && !MovementType.doesCollideWith(bounds.offset(1, 0, 0), cache) && !MovementType.doesCollideWith(bounds.offset(0, 0, 1), cache) && !MovementType.doesCollideWith(bounds.offset(1, 0, 1), cache)) {
-                return DiagonalMovements.create(pos, pos.add(1, 0, 1), SOUTH_EAST);
+                return create(pos, pos.add(1, 0, 1));
             }
             return null;
         }
     },
-    SOUTH_WEST {
+    SOUTH_WEST(MovementTypes.WALK_SOUTH_WEST) {
         @Override
         public @Nullable Movement modify(final BattleParticipantBounds bounds, final BlockPos pos, final Box pathBounds, final World world, final WorldShapeCache cache) {
             if (MovementType.doesCollideWith(bounds.offset(0, -1, 0), cache) && MovementType.doesCollideWith(bounds.offset(-1, -1, 1), cache) && !MovementType.doesCollideWith(bounds.offset(-1, 0, 0), cache) && !MovementType.doesCollideWith(bounds.offset(0, 0, 1), cache) && !MovementType.doesCollideWith(bounds.offset(-1, 0, 1), cache)) {
-                return DiagonalMovements.create(pos, pos.add(-1, 0, 1), SOUTH_WEST);
+                return create(pos, pos.add(-1, 0, 1));
             }
             return null;
         }
     };
+
+    private final MovementTypes.RegisteredMovementType movementType;
+
+    DiagonalMovements(MovementTypes.RegisteredMovementType movementType) {
+        this.movementType = movementType;
+    }
 
     @Override
     public <T> T serialize(final DynamicOps<T> ops, final Movement movement) {
@@ -71,11 +77,11 @@ public enum DiagonalMovements implements MovementType {
         final BlockPos endPos = BlockPos.CODEC.parse(ops, mapLike.get("end_pos")).getOrThrow(false, s -> {
             throw new RuntimeException(s);
         });
-        return new Simple(startPos, endPos, this);
+        return new Simple(startPos, endPos, movementType);
     }
 
-    private static Movement create(final BlockPos start, final BlockPos end, final MovementType self) {
-        return new Simple(start, end, self);
+    @Nullable Movement create(final BlockPos start, final BlockPos end) {
+        return new Simple(start, end, movementType);
     }
 
     private static final class Simple implements Movement {
@@ -83,9 +89,9 @@ public enum DiagonalMovements implements MovementType {
         private final BlockPos start;
         private final BlockPos end;
         private final BlockPos delta;
-        private final MovementType type;
+        private final MovementTypes.RegisteredMovementType type;
 
-        private Simple(final BlockPos start, final BlockPos end, final MovementType type) {
+        private Simple(final BlockPos start, final BlockPos end, final MovementTypes.RegisteredMovementType type) {
             this.start = start;
             this.end = end;
             delta = end.subtract(start);
@@ -120,7 +126,7 @@ public enum DiagonalMovements implements MovementType {
         }
 
         @Override
-        public MovementType getType() {
+        public MovementTypes.RegisteredMovementType getType() {
             return type;
         }
     }

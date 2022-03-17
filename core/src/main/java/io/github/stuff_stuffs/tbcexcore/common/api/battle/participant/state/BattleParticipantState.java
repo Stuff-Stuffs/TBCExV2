@@ -32,4 +32,6 @@ public interface BattleParticipantState extends BattleParticipantStateView {
     boolean setPos(BlockPos pos, Tracer<ActionTrace> tracer);
 
     boolean setTeam(BattleParticipantTeam team, Tracer<ActionTrace> tracer);
+
+    boolean useEnergy(double amount, Tracer<ActionTrace> tracer);
 }

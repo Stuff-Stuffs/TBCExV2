@@ -25,7 +25,7 @@ public final class ParticipantJoinBattleAction implements BattleAction {
 
     @Override
     public BattleActionType<?> getType() {
-        return BattleActionTypes.PARTICIPANT_JOIN_BATTLE_TYPE;
+        return BattleActionTypes.PARTICIPANT_JOIN_BATTLE_ACTION_TYPE;
     }
 
     @Override

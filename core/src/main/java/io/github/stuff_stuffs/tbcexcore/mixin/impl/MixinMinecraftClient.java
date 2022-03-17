@@ -1,6 +1,6 @@
 package io.github.stuff_stuffs.tbcexcore.mixin.impl;
 
-import io.github.stuff_stuffs.tbcexcore.client.screen.BattleMenuScreen;
+import io.github.stuff_stuffs.tbcexcore.client.render.screen.BattleMenuScreen;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleHandle;
 import io.github.stuff_stuffs.tbcexcore.mixin.api.BattlePlayerEntity;
 import net.minecraft.client.MinecraftClient;

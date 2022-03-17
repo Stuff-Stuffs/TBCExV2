@@ -1,12 +1,9 @@
 package io.github.stuff_stuffs.tbcexgui.client.impl.render;
 
-import io.github.stuff_stuffs.tbcexgui.client.api.GuiQuad;
 import io.github.stuff_stuffs.tbcexgui.client.api.GuiRenderMaterial;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-
-import java.util.Arrays;
 
 public class DeferredEmittedQuad {
     private final MutableGuiQuadImpl delegate = new MutableGuiQuadImpl();
@@ -44,7 +41,7 @@ public class DeferredEmittedQuad {
         }
     }
 
-    public double depth(int vertexIndex) {
+    public double depth(final int vertexIndex) {
         return delegate.depthByIndex(vertexIndex);
     }
 

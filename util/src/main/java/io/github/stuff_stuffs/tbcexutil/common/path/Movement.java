@@ -2,7 +2,6 @@ package io.github.stuff_stuffs.tbcexutil.common.path;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
-import io.github.stuff_stuffs.tbcexutil.common.HorizontalDirection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -42,11 +41,11 @@ public interface Movement {
         return Set.of();
     }
 
-    MovementType getType();
+    MovementTypes.RegisteredMovementType getType();
 
     static <T> T serialize(final DynamicOps<T> ops, final Movement movement) {
         final RecordBuilder<T> builder = ops.mapBuilder();
-        builder.add("data", movement.getType().serialize(ops, movement));
+        builder.add("data", movement.getType().getDelegate().serialize(ops, movement));
         builder.add("type", MovementTypes.REGISTRY.getCodec().encodeStart(ops, movement.getType()));
         return builder.build(ops.empty()).getOrThrow(false, s -> {
             throw new RuntimeException(s);
@@ -58,9 +57,9 @@ public interface Movement {
             throw new RuntimeException(s);
         });
         final T data = mapLike.get("data");
-        final MovementType type = MovementTypes.REGISTRY.getCodec().parse(ops, mapLike.get("type")).getOrThrow(false, s -> {
+        final MovementTypes.RegisteredMovementType type = MovementTypes.REGISTRY.getCodec().parse(ops, mapLike.get("type")).getOrThrow(false, s -> {
             throw new RuntimeException(s);
         });
-        return type.deserialize(ops, data);
+        return type.getDelegate().deserialize(ops, data);
     }
 }

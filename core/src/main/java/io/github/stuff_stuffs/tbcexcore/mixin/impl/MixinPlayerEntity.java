@@ -8,12 +8,15 @@ import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.BattlePart
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.restore.RestoreData;
 import io.github.stuff_stuffs.tbcexcore.common.impl.battle.participant.restore.PlayerRestoreData;
 import io.github.stuff_stuffs.tbcexcore.mixin.api.BattlePlayerEntity;
+import io.github.stuff_stuffs.tbcexutil.common.BattleParticipantBounds;
 import io.github.stuff_stuffs.tbcexutil.common.PairIterator;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,6 +26,7 @@ import java.util.Objects;
 
 @Mixin(PlayerEntity.class)
 public abstract class MixinPlayerEntity extends LivingEntity implements BattlePlayerEntity, BattleParticipant {
+    private static final BattleParticipantBounds DEFAULT = BattleParticipantBounds.builder().add(TBCExCore.createId("body"), new Box(0,0,0, 1, 1.75, 1)).build();
     @Shadow
     public abstract PlayerInventory getInventory();
 
@@ -81,5 +85,15 @@ public abstract class MixinPlayerEntity extends LivingEntity implements BattlePl
     @Override
     public boolean tbcex$canJoinBattle() {
         return currentBattle == null;
+    }
+
+    @Override
+    public BattleParticipantBounds tbcex$getBattleBounds() {
+        return DEFAULT;
+    }
+
+    @Override
+    public BlockPos tbcex$getPos() {
+        return this.getBlockPos();
     }
 }

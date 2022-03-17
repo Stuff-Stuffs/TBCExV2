@@ -14,6 +14,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +60,10 @@ public class StackingWidget extends AbstractWidget {
 
     private Entry getTop() {
         return entries.isEmpty() ? root : entries.get(entries.size() - 1);
+    }
+
+    public Widget getTopWidget() {
+        return getTop().widget;
     }
 
     @Override
@@ -119,6 +124,21 @@ public class StackingWidget extends AbstractWidget {
         context.pushTranslate(-buttonThickness / 2.0, 0, 1);
         getTop().widget.render(context);
         context.popGuiTransform();
+
+        processEvents(context, event -> {
+            if(event instanceof GuiInputContext.KeyPress keyPress) {
+                if(keyPress.keyCode== GLFW.GLFW_KEY_ESCAPE) {
+                    if (entries.isEmpty()) {
+                        onClickRootButton.run();
+                    } else {
+                        pop();
+                    }
+                    return true;
+                }
+            }
+            return false;
+        });
+
         context.exitSection(childSection);
     }
 

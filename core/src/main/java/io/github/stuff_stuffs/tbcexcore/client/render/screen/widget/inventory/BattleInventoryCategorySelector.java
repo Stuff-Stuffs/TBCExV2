@@ -1,4 +1,4 @@
-package io.github.stuff_stuffs.tbcexcore.client.screen.widget.inventory;
+package io.github.stuff_stuffs.tbcexcore.client.render.screen.widget.inventory;
 
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantInventoryHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.item.BattleParticipantItemCategory;
@@ -36,6 +36,7 @@ public final class BattleInventoryCategorySelector {
         for (final BattleParticipantItemCategory category : BattleParticipantItemCategory.getAllCategories()) {
             entries.add(new Entry(category, widthFactor, BUTTON_HEIGHT, i++));
         }
+        setPosition(0);
     }
 
     public void filter(final List<BattleParticipantInventoryHandle> handles, final Function<BattleParticipantInventoryHandle, BattleParticipantItemStack> stackGetter) {
@@ -46,16 +47,12 @@ public final class BattleInventoryCategorySelector {
     }
 
     private void setPosition(final double position) {
-        if (position < 0) {
-            this.position = Math.max(0, (BUTTON_HEIGHT+BUTTON_SPACING));
-        } else {
-            this.position = Math.max(Math.min(position, (BUTTON_HEIGHT+BUTTON_SPACING) * entries.size()),(BUTTON_HEIGHT+BUTTON_SPACING));
-        }
+        this.position = Math.max(Math.min(position, (BUTTON_HEIGHT + BUTTON_SPACING) * entries.size()), (BUTTON_HEIGHT + BUTTON_SPACING));
     }
 
     public void render(final GuiContext context, final double width, final double height) {
         context.enterSection(getDebugName());
-        final Rect2d rect = new Rect2d(0, height-height*heightFactor, widthFactor * width, height);
+        final Rect2d rect = new Rect2d(0, height * heightFactor, widthFactor * width, height);
         AbstractWidget.processEvents(context, event -> {
             if (event instanceof GuiInputContext.MouseScroll scroll) {
                 final Vec2d mouseCursor = context.transformMouseCursor(new Vec2d(scroll.mouseX, scroll.mouseY));
@@ -117,7 +114,7 @@ public final class BattleInventoryCategorySelector {
                         } else {
                             BattleInventoryCategorySelector.this.category = null;
                         }
-                        setPosition((index+1) * (this.height + BUTTON_SPACING));
+                        setPosition((index + 1) * (this.height + BUTTON_SPACING));
                         return true;
                     }
                 }

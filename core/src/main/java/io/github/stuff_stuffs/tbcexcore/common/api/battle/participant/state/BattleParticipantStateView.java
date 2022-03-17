@@ -43,6 +43,8 @@ public interface BattleParticipantStateView {
 
     BlockPos getPos();
 
+    double getEnergy();
+
     interface EventRegisterer {
         void register(EventInitializer initializer);
     }

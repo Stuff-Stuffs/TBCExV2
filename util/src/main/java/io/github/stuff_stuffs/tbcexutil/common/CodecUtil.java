@@ -183,6 +183,30 @@ public final class CodecUtil {
         return createDependentPairCodec(leftCodec, rightCodecExtractor).xmap(Pair::getSecond, v -> Pair.of(leftExtractor.apply(v), v));
     }
 
+    public static <T> Codec<Optional<T>> createOptional(final Codec<T> codec) {
+        return new Codec<>() {
+            @Override
+            public <K> DataResult<Pair<Optional<T>, K>> decode(final DynamicOps<K> ops, final K input) {
+                final MapLike<K> map = get(ops.getMap(input));
+                final K data = map.get("data");
+                if (data == null) {
+                    return DataResult.success(Pair.of(Optional.empty(), ops.empty()));
+                }
+                final T value = get(codec.parse(ops, data));
+                return DataResult.success(Pair.of(Optional.of(value), ops.empty()));
+            }
+
+            @Override
+            public <K> DataResult<K> encode(final Optional<T> input, final DynamicOps<K> ops, final K prefix) {
+                final RecordBuilder<K> builder = ops.mapBuilder();
+                if (input.isPresent()) {
+                    builder.add("data", codec.encodeStart(ops, input.get()));
+                }
+                return builder.build(prefix);
+            }
+        };
+    }
+
     public interface DependentEncoder<L, R> {
         <T> DataResult<T> encode(L coValue, R value, DynamicOps<T> ops);
     }

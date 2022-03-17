@@ -1,4 +1,4 @@
-package io.github.stuff_stuffs.tbcexcore.client.screen.widget.inventory;
+package io.github.stuff_stuffs.tbcexcore.client.render.screen.widget.inventory;
 
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantInventoryHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.BattleParticipantInventoryView;

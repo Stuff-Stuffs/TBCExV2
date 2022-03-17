@@ -10,6 +10,7 @@ import io.github.stuff_stuffs.tbcexutil.common.event.EventKey;
 import io.github.stuff_stuffs.tbcexutil.common.event.map.EventMap;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiFunction;
 
@@ -29,6 +30,8 @@ public interface BattleStateView {
     BattleEffectContainerView getEffects();
 
     BattleBounds getBounds();
+
+    @Nullable BattleParticipantHandle getCurrentTurnParticipant();
 
     interface EventRegisterer {
         void register(EventInitializer initializer);

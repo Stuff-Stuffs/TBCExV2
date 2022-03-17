@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "tbcexutil:walk_north",
+    "tbcexutil:walk_east",
+    "tbcexutil:walk_south",
+    "tbcexutil:walk_west",
+    "tbcexutil:walk_north_east",
+    "tbcexutil:walk_south_east",
+    "tbcexutil:walk_south_west",
+    "tbcexutil:walk_north_west"
+  ]
+}

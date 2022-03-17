@@ -12,6 +12,7 @@ import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.restore.RestoreData;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.BattleParticipantStat;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.BattleParticipantStatContainer;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.BattleParticipantStats;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantState;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantStateView;
@@ -32,14 +33,19 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
             BattleParticipantInventoryImpl.CODEC.fieldOf("inventory").forGetter(participant -> participant.inventory),
             BattleParticipantHealthContainerImpl.CODEC.fieldOf("health").forGetter(participant -> participant.healthContainer),
             BattleParticipantTeam.CODEC.fieldOf("team").forGetter(participant -> participant.team),
-            RestoreData.CODEC.fieldOf("restore").forGetter(participant -> participant.restoreData)
+            RestoreData.CODEC.fieldOf("restore").forGetter(participant -> participant.restoreData),
+            BattleParticipantBounds.CODEC.fieldOf("bounds").forGetter(participant -> participant.bounds),
+            BlockPos.CODEC.fieldOf("pos").forGetter(participant -> participant.pos),
+            Codec.DOUBLE.fieldOf("energy").forGetter(participant -> participant.energy)
     ).apply(instance, BattleParticipantStateImpl::new));
+    private static final double ENERGY_UNINIT_MARKER = -1;
     private final EventMapImpl eventMap;
     private final BattleParticipantEffectContainerImpl effectContainer;
     private final BattleParticipantStatContainer statContainer;
     private final BattleParticipantInventoryImpl inventory;
     private final BattleParticipantHealthContainerImpl healthContainer;
     private final RestoreData restoreData;
+    private double energy = ENERGY_UNINIT_MARKER;
     private BattleParticipantBounds bounds;
     private BlockPos pos;
     private BattleParticipantTeam team;
@@ -61,7 +67,7 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         bounds = participant.tbcex$getBattleBounds().withCenter(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public BattleParticipantStateImpl(final BattleParticipantEffectContainerImpl effectContainer, final BattleParticipantInventoryImpl inventory, final BattleParticipantHealthContainerImpl healthContainer, final BattleParticipantTeam team, final RestoreData restoreData) {
+    public BattleParticipantStateImpl(final BattleParticipantEffectContainerImpl effectContainer, final BattleParticipantInventoryImpl inventory, final BattleParticipantHealthContainerImpl healthContainer, final BattleParticipantTeam team, final RestoreData restoreData, final BattleParticipantBounds bounds, final BlockPos pos, final double energy) {
         eventMap = new EventMapImpl();
         this.effectContainer = effectContainer;
         statContainer = new BattleParticipantStatContainer();
@@ -69,6 +75,8 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         this.healthContainer = healthContainer;
         this.team = team;
         this.restoreData = restoreData;
+        this.bounds = bounds;
+        this.pos = pos;
     }
 
     public void init(final BattleParticipantHandle handle, final BattleState state, final Tracer<ActionTrace> tracer) {
@@ -78,10 +86,13 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         inventory.init(handle, this, tracer);
         effectContainer.init(this, tracer);
         healthContainer.init(this);
+        if (energy == ENERGY_UNINIT_MARKER) {
+            energy = statContainer.getStat(BattleParticipantStats.MAX_ENERGY);
+        }
     }
 
-    public void deinit(Tracer<ActionTrace> tracer) {
-        if(!deinit) {
+    public void deinit(final Tracer<ActionTrace> tracer) {
+        if (!deinit) {
             inventory.deinit(tracer);
             effectContainer.deinit(tracer);
             deinit = true;
@@ -93,7 +104,7 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         if (handle == null) {
             throw new TBCExException("Tried to use a battle participant without initializing it");
         }
-        if(deinit) {
+        if (deinit) {
             throw new TBCExException("Tried to use a de-initialized battle participant!");
         }
         return handle;
@@ -109,7 +120,7 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         if (battleState == null) {
             throw new TBCExException("Tried to use a battle participant without initializing it");
         }
-        if(deinit) {
+        if (deinit) {
             throw new TBCExException("Tried to use a de-initialized battle participant!");
         }
         return battleState;
@@ -120,7 +131,7 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         if (handle == null) {
             throw new TBCExException("Tried to use a battle participant without initializing it");
         }
-        if(deinit) {
+        if (deinit) {
             throw new TBCExException("Tried to use a de-initialized battle participant!");
         }
         return inventory;
@@ -131,7 +142,7 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         if (handle == null) {
             throw new TBCExException("Tried to use a battle participant without initializing it");
         }
-        if(deinit) {
+        if (deinit) {
             throw new TBCExException("Tried to use a de-initialized battle participant!");
         }
         return statContainer.getStat(stat);
@@ -142,7 +153,7 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         if (handle == null) {
             throw new TBCExException("Tried to use a battle participant without initializing it");
         }
-        if(deinit) {
+        if (deinit) {
             throw new TBCExException("Tried to use a de-initialized battle participant!");
         }
         return statContainer;
@@ -153,7 +164,7 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         if (handle == null) {
             throw new TBCExException("Tried to use a battle participant without initializing it");
         }
-        if(deinit) {
+        if (deinit) {
             throw new TBCExException("Tried to use a de-initialized battle participant!");
         }
         return effectContainer;
@@ -164,18 +175,18 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         if (handle == null) {
             throw new TBCExException("Tried to use a battle participant without initializing it");
         }
-        if(deinit) {
+        if (deinit) {
             throw new TBCExException("Tried to use a de-initialized battle participant!");
         }
         return healthContainer;
     }
 
     @Override
-    public boolean setPos(final BlockPos pos, Tracer<ActionTrace> tracer) {
+    public boolean setPos(final BlockPos pos, final Tracer<ActionTrace> tracer) {
         if (handle == null) {
             throw new TBCExException("Tried to use a battle participant without initializing it");
         }
-        if(deinit) {
+        if (deinit) {
             throw new TBCExException("Tried to use a de-initialized battle participant!");
         }
         if (getEventMap().getEventMut(BattleParticipantEvents.BATTLE_PARTICIPANT_PRE_SET_POS_EVENT).getInvoker().onSetPos(this, pos, tracer)) {
@@ -193,7 +204,7 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         if (handle == null) {
             throw new TBCExException("Tried to use a battle participant without initializing it");
         }
-        if(deinit) {
+        if (deinit) {
             throw new TBCExException("Tried to use a de-initialized battle participant!");
         }
         return team;
@@ -204,7 +215,7 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         if (handle == null) {
             throw new TBCExException("Tried to use a battle participant without initializing it");
         }
-        if(deinit) {
+        if (deinit) {
             throw new TBCExException("Tried to use a de-initialized battle participant!");
         }
         return bounds;
@@ -215,10 +226,15 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         if (handle == null) {
             throw new TBCExException("Tried to use a battle participant without initializing it");
         }
-        if(deinit) {
+        if (deinit) {
             throw new TBCExException("Tried to use a de-initialized battle participant!");
         }
         return pos;
+    }
+
+    @Override
+    public double getEnergy() {
+        return energy;
     }
 
     @Override
@@ -226,13 +242,22 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
         if (handle == null) {
             throw new TBCExException("Tried to use a battle participant without initializing it");
         }
-        if(deinit) {
+        if (deinit) {
             throw new TBCExException("Tried to use a de-initialized battle participant!");
         }
         if (getEventMap().getEventMut(BattleParticipantEvents.BATTLE_PARTICIPANT_PRE_CHANGE_TEAM_EVENT).getInvoker().beforeTeamChange(this, this.team, team, tracer)) {
-            BattleParticipantTeam oldTeam = this.team;
+            final BattleParticipantTeam oldTeam = this.team;
             this.team = team;
             getEventMap().getEventMut(BattleParticipantEvents.BATTLE_PARTICIPANT_POST_CHANGE_TEAM_EVENT).getInvoker().afterTeamChange(this, oldTeam, team, tracer);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean useEnergy(final double amount, final Tracer<ActionTrace> tracer) {
+        if (energy >= amount) {
+            energy -= amount;
             return true;
         }
         return false;

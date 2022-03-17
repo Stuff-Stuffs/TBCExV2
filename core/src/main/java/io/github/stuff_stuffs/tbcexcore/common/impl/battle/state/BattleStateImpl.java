@@ -18,14 +18,20 @@ import io.github.stuff_stuffs.tbcexutil.common.Tracer;
 import io.github.stuff_stuffs.tbcexutil.common.event.map.EventMapImpl;
 import io.github.stuff_stuffs.tbcexutil.common.event.map.MutEventMap;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceLinkedOpenHashMap;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
 public class BattleStateImpl implements BattleState {
-    public static final Codec<BattleStateImpl> CODEC = RecordCodecBuilder.create(instance -> instance.group(CodecUtil.createLinkedMapCodec(BattleParticipantHandle.CODEC, BattleParticipantStateImpl.CODEC).fieldOf("participants").forGetter(state -> state.participantStateByHandle), BattleEffectContainerImpl.CODEC.fieldOf("effects").forGetter(state -> state.effectContainer)).apply(instance, BattleStateImpl::new));
+    public static final Codec<BattleStateImpl> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            CodecUtil.createLinkedMapCodec(BattleParticipantHandle.CODEC, BattleParticipantStateImpl.CODEC).fieldOf("participants").forGetter(state -> state.participantStateByHandle),
+            BattleEffectContainerImpl.CODEC.fieldOf("effects").forGetter(state -> state.effectContainer),
+            TurnChooser.CODEC.fieldOf("turnChooser").forGetter(state -> state.turnChooser)
+    ).apply(instance, BattleStateImpl::new));
     private final EventMapImpl eventMap = new EventMapImpl();
     private final Object2ReferenceLinkedOpenHashMap<BattleParticipantHandle, BattleParticipantStateImpl> participantStateByHandle;
     private final BattleEffectContainerImpl effectContainer;
+    private final TurnChooser turnChooser;
     private boolean init = false;
     private BattleBounds bounds = new BattleBounds(0, 0, 0, 0, 0, 0);
     private BattleHandle handle;
@@ -33,14 +39,16 @@ public class BattleStateImpl implements BattleState {
     public BattleStateImpl() {
         participantStateByHandle = new Object2ReferenceLinkedOpenHashMap<>();
         effectContainer = new BattleEffectContainerImpl();
+        turnChooser = new TurnChooser();
     }
 
-    private BattleStateImpl(final Map<BattleParticipantHandle, BattleParticipantStateImpl> map, final BattleEffectContainerImpl effectContainer) {
+    private BattleStateImpl(final Map<BattleParticipantHandle, BattleParticipantStateImpl> map, final BattleEffectContainerImpl effectContainer, final TurnChooser turnChooser) {
         participantStateByHandle = new Object2ReferenceLinkedOpenHashMap<>();
         for (final Map.Entry<BattleParticipantHandle, BattleParticipantStateImpl> entry : map.entrySet()) {
             participantStateByHandle.putAndMoveToLast(entry.getKey(), entry.getValue());
         }
         this.effectContainer = effectContainer;
+        this.turnChooser = turnChooser;
     }
 
     public void init(final BattleHandle handle, final Tracer<ActionTrace> tracer) {
@@ -84,6 +92,11 @@ public class BattleStateImpl implements BattleState {
     }
 
     @Override
+    public @Nullable BattleParticipantHandle getCurrentTurnParticipant() {
+        return turnChooser.getCurrent(participantStateByHandle.keySet(), participantStateByHandle::get);
+    }
+
+    @Override
     public boolean setBounds(final BattleBounds bounds, final Tracer<ActionTrace> tracer) {
         if (!checkNewBounds(bounds)) {
             return false;
@@ -124,6 +137,15 @@ public class BattleStateImpl implements BattleState {
         }
         eventMap.getEventMut(BattleEvents.BATTLE_POST_JOIN_EVENT).getInvoker().afterJoin(copy, tracer);
         return true;
+    }
+
+    @Override
+    public boolean advanceTurn(final Tracer<ActionTrace> tracer) {
+        if (participantStateByHandle.size() > 0) {
+            final BattleParticipantHandle current = turnChooser.getCurrent(participantStateByHandle.keySet(), participantStateByHandle::get);
+            return !turnChooser.advance(participantStateByHandle.keySet(), participantStateByHandle::get).equals(current);
+        }
+        return false;
     }
 
     @Override

@@ -21,4 +21,6 @@ public interface BattleState extends BattleStateView {
     boolean setBounds(BattleBounds bounds, Tracer<ActionTrace> tracer);
 
     boolean join(BattleParticipantState state, BattleParticipantHandle handle, Tracer<ActionTrace> tracer);
+
+    boolean advanceTurn(Tracer<ActionTrace> tracer);
 }

@@ -7,6 +7,7 @@ import com.mojang.serialization.RecordBuilder;
 import io.github.stuff_stuffs.tbcexutil.common.BattleParticipantBounds;
 import io.github.stuff_stuffs.tbcexutil.common.HorizontalDirection;
 import io.github.stuff_stuffs.tbcexutil.common.WorldShapeCache;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
+//TODO redo this
 public enum BasicMovements implements MovementType {
     FALL {
         @Override
@@ -29,7 +31,7 @@ public enum BasicMovements implements MovementType {
 
         @Override
         public <T> T serialize(final DynamicOps<T> ops, final Movement movement) {
-            if (movement.getType() != FALL) {
+            if (movement.getType() != MovementTypes.FALL) {
                 throw new RuntimeException();
             }
             final Fall fall = (Fall) movement;
@@ -54,18 +56,18 @@ public enum BasicMovements implements MovementType {
             });
             return new Fall(startPos, validEnding);
         }
-    }, WALK_NORTH {
+    }, NORTH {
         @Override
         public @Nullable Movement modify(final BattleParticipantBounds bounds, final BlockPos pos, final Box pathBounds, final World world, final WorldShapeCache cache) {
             if (MovementType.doesCollideWith(bounds.offset(0, -1, 0), cache) && !MovementType.doesCollideWith(bounds.offset(0, 0, -1), cache) && MovementType.doesCollideWith(bounds.offset(0, -1, -1), cache)) {
-                return createSimple(pos, pos.add(0, 0, -1), HorizontalDirection.NORTH, WALK_NORTH);
+                return createSimple(pos, pos.add(0, 0, -1), HorizontalDirection.NORTH, MovementTypes.WALK_NORTH);
             }
             return null;
         }
 
         @Override
         public <T> T serialize(final DynamicOps<T> ops, final Movement movement) {
-            if (movement.getType() != WALK_NORTH) {
+            if (movement.getType() != MovementTypes.WALK_NORTH) {
                 throw new RuntimeException();
             }
             final Simple simple = (Simple) movement;
@@ -88,21 +90,21 @@ public enum BasicMovements implements MovementType {
             final BlockPos endPos = BlockPos.CODEC.parse(ops, mapLike.get("end_pos")).getOrThrow(false, s -> {
                 throw new RuntimeException(s);
             });
-            return new Simple(startPos, endPos, WALK_NORTH);
+            return new Simple(startPos, endPos, MovementTypes.WALK_NORTH);
         }
     },
-    WALK_SOUTH {
+    SOUTH {
         @Override
         public @Nullable Movement modify(final BattleParticipantBounds bounds, final BlockPos pos, final Box pathBounds, final World world, final WorldShapeCache cache) {
             if (MovementType.doesCollideWith(bounds.offset(0, -1, 0), cache) && !MovementType.doesCollideWith(bounds.offset(0, 0, 1), cache) && MovementType.doesCollideWith(bounds.offset(0, -1, 1), cache)) {
-                return createSimple(pos, pos.add(0, 0, 1), HorizontalDirection.SOUTH, WALK_SOUTH);
+                return createSimple(pos, pos.add(0, 0, 1), HorizontalDirection.SOUTH, MovementTypes.WALK_SOUTH);
             }
             return null;
         }
 
         @Override
         public <T> T serialize(final DynamicOps<T> ops, final Movement movement) {
-            if (movement.getType() != WALK_SOUTH) {
+            if (movement.getType() != MovementTypes.WALK_SOUTH) {
                 throw new RuntimeException();
             }
             final Simple simple = (Simple) movement;
@@ -125,20 +127,20 @@ public enum BasicMovements implements MovementType {
             final BlockPos endPos = BlockPos.CODEC.parse(ops, mapLike.get("end_pos")).getOrThrow(false, s -> {
                 throw new RuntimeException(s);
             });
-            return new Simple(startPos, endPos, WALK_SOUTH);
+            return new Simple(startPos, endPos, MovementTypes.WALK_SOUTH);
         }
-    }, WALK_EAST {
+    }, EAST {
         @Override
         public @Nullable Movement modify(final BattleParticipantBounds bounds, final BlockPos pos, final Box pathBounds, final World world, final WorldShapeCache cache) {
             if (MovementType.doesCollideWith(bounds.offset(0, -1, 0), cache) && !MovementType.doesCollideWith(bounds.offset(1, 0, 0), cache) && MovementType.doesCollideWith(bounds.offset(1, -1, 0), cache)) {
-                return createSimple(pos, pos.add(1, 0, 0), HorizontalDirection.EAST, WALK_EAST);
+                return createSimple(pos, pos.add(1, 0, 0), HorizontalDirection.EAST, MovementTypes.WALK_EAST);
             }
             return null;
         }
 
         @Override
         public <T> T serialize(final DynamicOps<T> ops, final Movement movement) {
-            if (movement.getType() != WALK_EAST) {
+            if (movement.getType() != MovementTypes.WALK_EAST) {
                 throw new RuntimeException();
             }
             final Simple simple = (Simple) movement;
@@ -161,20 +163,20 @@ public enum BasicMovements implements MovementType {
             final BlockPos endPos = BlockPos.CODEC.parse(ops, mapLike.get("end_pos")).getOrThrow(false, s -> {
                 throw new RuntimeException(s);
             });
-            return new Simple(startPos, endPos, WALK_EAST);
+            return new Simple(startPos, endPos, MovementTypes.WALK_EAST);
         }
-    }, WALK_WEST {
+    }, WEST {
         @Override
         public @Nullable Movement modify(final BattleParticipantBounds bounds, final BlockPos pos, final Box pathBounds, final World world, final WorldShapeCache cache) {
             if (MovementType.doesCollideWith(bounds.offset(0, -1, 0), cache) && !MovementType.doesCollideWith(bounds.offset(-1, 0, 0), cache) && MovementType.doesCollideWith(bounds.offset(-1, -1, 0), cache)) {
-                return createSimple(pos, pos.add(-1, 0, 0), HorizontalDirection.EAST, WALK_WEST);
+                return createSimple(pos, pos.add(-1, 0, 0), HorizontalDirection.EAST, MovementTypes.WALK_WEST);
             }
             return null;
         }
 
         @Override
         public <T> T serialize(final DynamicOps<T> ops, final Movement movement) {
-            if (movement.getType() != WALK_WEST) {
+            if (movement.getType() != MovementTypes.WALK_WEST) {
                 throw new RuntimeException();
             }
             final Simple simple = (Simple) movement;
@@ -197,11 +199,11 @@ public enum BasicMovements implements MovementType {
             final BlockPos endPos = BlockPos.CODEC.parse(ops, mapLike.get("end_pos")).getOrThrow(false, s -> {
                 throw new RuntimeException(s);
             });
-            return new Simple(startPos, endPos, WALK_WEST);
+            return new Simple(startPos, endPos, MovementTypes.WALK_WEST);
         }
     };
 
-    private static Movement createSimple(final BlockPos start, final BlockPos end, final HorizontalDirection endDir, final MovementType type) {
+    private static Movement createSimple(final BlockPos start, final BlockPos end, final HorizontalDirection endDir, final MovementTypes.RegisteredMovementType type) {
         return new Simple(start, end, type);
     }
 
@@ -209,9 +211,9 @@ public enum BasicMovements implements MovementType {
         private final BlockPos start;
         private final BlockPos end;
         private final BlockPos delta;
-        private final MovementType type;
+        private final MovementTypes.RegisteredMovementType type;
 
-        private Simple(final BlockPos start, final BlockPos end, final MovementType type) {
+        private Simple(final BlockPos start, final BlockPos end, final MovementTypes.RegisteredMovementType type) {
             this.start = start;
             this.end = end;
             this.type = type;
@@ -244,7 +246,7 @@ public enum BasicMovements implements MovementType {
         }
 
         @Override
-        public MovementType getType() {
+        public MovementTypes.RegisteredMovementType getType() {
             return type;
         }
     }
@@ -290,8 +292,8 @@ public enum BasicMovements implements MovementType {
         }
 
         @Override
-        public MovementType getType() {
-            return FALL;
+        public MovementTypes.RegisteredMovementType getType() {
+            return MovementTypes.FALL;
         }
 
         @Override

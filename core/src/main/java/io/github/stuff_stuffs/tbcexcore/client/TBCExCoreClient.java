@@ -3,6 +3,7 @@ package io.github.stuff_stuffs.tbcexcore.client;
 import io.github.stuff_stuffs.tbcexcore.client.network.BattlePlayerUpdateReceiver;
 import io.github.stuff_stuffs.tbcexcore.client.network.BattleUpdateReceiver;
 import io.github.stuff_stuffs.tbcexcore.client.network.BattleUpdateRequestSender;
+import io.github.stuff_stuffs.tbcexcore.client.render.BoxInfo;
 import io.github.stuff_stuffs.tbcexcore.client.render.TBCExCoreRenderRegistries;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleWorld;
@@ -17,6 +18,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,6 +63,10 @@ public class TBCExCoreClient implements ClientModInitializer {
             RENDER_PRIMITIVES.clear();
         });
     }
+    public static void addBoxInfo(final BoxInfo box) {
+        RENDER_PRIMITIVES.add(context -> WorldRenderer.drawBox(context.matrixStack(), context.consumers().getBuffer(RenderLayer.LINES), box.x0, box.y0, box.z0, box.x1, box.y1, box.z1, (float) box.r, (float) box.g, (float) box.b, (float) box.a));
+    }
+
 
     public static void addRenderPrimitive(final Consumer<WorldRenderContext> primitive) {
         RENDER_PRIMITIVES.add(primitive);
