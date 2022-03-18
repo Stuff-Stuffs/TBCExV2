@@ -6,6 +6,7 @@ import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.ActionTrace;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.BattleAction;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.BattleActionType;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.BattleActionTypes;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.BattlePath;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.state.BattleState;
 import io.github.stuff_stuffs.tbcexutil.common.BattleBounds;
 import io.github.stuff_stuffs.tbcexutil.common.Tracer;
@@ -25,6 +26,8 @@ public final class BattleResizeAction implements BattleAction {
 
     @Override
     public void apply(final BattleState state, final Tracer<ActionTrace> tracer) {
-        state.setBounds(bounds, tracer);//TODO error handling
+        if(!state.setBounds(bounds, tracer)) {
+            BattleAction.error();
+        }
     }
 }

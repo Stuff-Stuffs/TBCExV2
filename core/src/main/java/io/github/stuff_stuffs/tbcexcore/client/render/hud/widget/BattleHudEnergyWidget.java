@@ -39,7 +39,6 @@ public class BattleHudEnergyWidget extends AbstractWidget {
             guiContext.exitSection(getDebugName());
             return;
         }
-        //TODO
         if (handle.equals(battle.getState().getCurrentTurnParticipant())) {
             final double percent = Math.min(context.getEnergy() / context.getTotalEnergy(), 1);
             final double percentPartial = Math.min(Math.max(context.getEnergy() - context.getPotentialEnergyCost(), 0) / context.getTotalEnergy(), 1);

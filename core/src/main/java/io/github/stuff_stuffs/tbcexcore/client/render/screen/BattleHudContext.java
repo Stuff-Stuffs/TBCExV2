@@ -1,5 +1,7 @@
 package io.github.stuff_stuffs.tbcexcore.client.render.screen;
 
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantHandle;
+
 public interface BattleHudContext {
     double getTotalEnergy();
 
@@ -9,12 +11,16 @@ public interface BattleHudContext {
 
     double getPotentialEnergyCost();
 
+    BattleParticipantHandle getHandle();
+
     final class Impl implements BattleHudContext {
+        private final BattleParticipantHandle participantHandle;
         private double totalEnergy;
         private double energy;
         private double potentialCost;
 
-        public Impl(final double totalEnergy, final double energy) {
+        public Impl(final BattleParticipantHandle participantHandle, final double totalEnergy, final double energy) {
+            this.participantHandle = participantHandle;
             this.totalEnergy = totalEnergy;
             this.energy = energy;
         }
@@ -39,11 +45,16 @@ public interface BattleHudContext {
             return potentialCost;
         }
 
-        public void setEnergy(double energy) {
+        @Override
+        public BattleParticipantHandle getHandle() {
+            return participantHandle;
+        }
+
+        public void setEnergy(final double energy) {
             this.energy = energy;
         }
 
-        public void setTotalEnergy(double totalEnergy) {
+        public void setTotalEnergy(final double totalEnergy) {
             this.totalEnergy = totalEnergy;
         }
     }

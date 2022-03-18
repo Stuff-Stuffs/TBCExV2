@@ -23,8 +23,7 @@ public class BattleHudScreen extends TBCExHud {
         super(new RootPanelWidget(false), "In Battle");
         this.handle = handle;
         this.entity = entity;
-        //TODO
-        context = new BattleHudContext.Impl(10, 5);
+        context = new BattleHudContext.Impl(new BattleParticipantHandle(handle, entity.getUuid()), 0, 0);
         ((RootPanelWidget) root).addChild(PositionedWidget.wrap(new BattleHudEnergyWidget(0.5, 0.025, context, new BattleParticipantHandle(handle, entity.getUuid()), entity.world), 0.25, 0.975));
     }
 

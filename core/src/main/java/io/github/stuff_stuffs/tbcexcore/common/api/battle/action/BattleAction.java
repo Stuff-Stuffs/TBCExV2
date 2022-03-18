@@ -5,6 +5,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.state.BattleState;
 import io.github.stuff_stuffs.tbcexutil.common.CodecUtil;
+import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
 import io.github.stuff_stuffs.tbcexutil.common.Tracer;
 
 public interface BattleAction {
@@ -23,4 +24,8 @@ public interface BattleAction {
     BattleActionType<?> getType();
 
     void apply(BattleState state, Tracer<ActionTrace> tracer);
+
+    static void error() {
+        throw new TBCExException();
+    }
 }

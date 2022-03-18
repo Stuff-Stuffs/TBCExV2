@@ -3,11 +3,13 @@ package io.github.stuff_stuffs.tbcexcore.client.render.screen.widget.move;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.stuff_stuffs.tbcexcore.client.TBCExCoreClient;
+import io.github.stuff_stuffs.tbcexcore.client.network.BattleActionAttemptSender;
 import io.github.stuff_stuffs.tbcexcore.client.render.BoxInfo;
 import io.github.stuff_stuffs.tbcexcore.client.render.screen.BattleHudContext;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.BattleParticipantPathGatherer;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.BattlePath;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantStateView;
+import io.github.stuff_stuffs.tbcexcore.common.impl.battle.action.ParticipantWalkBattleAction;
 import io.github.stuff_stuffs.tbcexgui.client.api.GuiContext;
 import io.github.stuff_stuffs.tbcexgui.client.api.GuiInputContext;
 import io.github.stuff_stuffs.tbcexgui.client.widget.AbstractWidget;
@@ -63,7 +65,7 @@ public class BattleMoveWidget extends AbstractWidget {
     private boolean pathRebuildNeeded = true;
     private static VertexBuffer pathBuffer;
 
-    public BattleMoveWidget(final Supplier<@Nullable BattleParticipantStateView> stateGetter, final World world, final BattleHudContext hudContext, Consumer<Boolean> passEventsSetter) {
+    public BattleMoveWidget(final Supplier<@Nullable BattleParticipantStateView> stateGetter, final World world, final BattleHudContext hudContext, final Consumer<Boolean> passEventsSetter) {
         this.stateGetter = stateGetter;
         this.world = world;
         this.hudContext = hudContext;
@@ -97,8 +99,7 @@ public class BattleMoveWidget extends AbstractWidget {
                 }
             }
             if (closest != null) {
-                //TODO
-                //BattleActionSender.send(handle.battleId(), new ParticipantMoveBattleAction(handle, closestPath));
+                BattleActionAttemptSender.send(hudContext.getHandle().getParent(), new ParticipantWalkBattleAction(hudContext.getHandle(), closestPath));
                 return true;
             }
         }
@@ -111,7 +112,7 @@ public class BattleMoveWidget extends AbstractWidget {
 
         processEvents(context, event -> {
             if (event instanceof GuiInputContext.KeyPress keyPress) {
-                if(keyPress.shift) {
+                if (keyPress.keyCode == GLFW.GLFW_KEY_TAB) {
                     passEventsState = !passEventsState;
                     passEventsSetter.accept(passEventsState);
                     return true;
@@ -161,7 +162,7 @@ public class BattleMoveWidget extends AbstractWidget {
                 RenderSystem.enableCull();
                 RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 
-                Vec3d pos = worldRenderContext.camera().getPos();
+                final Vec3d pos = worldRenderContext.camera().getPos();
                 final MatrixStack stack = worldRenderContext.matrixStack();
                 stack.push();
                 stack.translate(-pos.x, -pos.y, -pos.z);
@@ -184,7 +185,7 @@ public class BattleMoveWidget extends AbstractWidget {
         return context -> {
             final MatrixStack matrices = context.matrixStack();
             matrices.push();
-            Vec3d pos = context.camera().getPos();
+            final Vec3d pos = context.camera().getPos();
             matrices.translate(-pos.x, -pos.y, -pos.z);
             final VertexConsumer vertexConsumer = context.consumers().getBuffer(RenderLayer.LINES);
             for (final Movement movement : path.getMovements()) {
@@ -240,9 +241,6 @@ public class BattleMoveWidget extends AbstractWidget {
             for (int i = 0; i < endpoints.size(); i++) {
                 final Endpoint endPoint = endpoints.get(i);
                 final double cost = paths.get(i).getTotalCost();
-                if (cost > hudContext.getEnergy()) {
-                    continue;
-                }
                 final float percent = (float) Math.min(Math.max(hudContext.getEnergy() - cost, 0) / hudContext.getTotalEnergy(), 1);
                 final FloatRgbColour colour = new FloatRgbColour(new HsvColour(MathHelper.lerp(percent, 0, 244), 1, 1).pack(255));
                 matrixStack.push();
