@@ -4,7 +4,7 @@ import io.github.stuff_stuffs.tbcexcharacter.common.TBCExCharacter;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.BattleParticipantStat;
 import net.minecraft.util.registry.Registry;
 
-public final class BattleParticipantStats {
+public final class CharacterBattleParticipantStats {
     public static final BattleParticipantStat VITALITY = new BattleParticipantStat();
     public static final BattleParticipantStat INTELLIGENCE = new BattleParticipantStat();
     public static final BattleParticipantStat DEXTERITY = new BattleParticipantStat();
@@ -22,6 +22,6 @@ public final class BattleParticipantStats {
         Registry.register(registry, TBCExCharacter.createId("perception"), PERCEPTION);
     }
 
-    private BattleParticipantStats() {
+    private CharacterBattleParticipantStats() {
     }
 }

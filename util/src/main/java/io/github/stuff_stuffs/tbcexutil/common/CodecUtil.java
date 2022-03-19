@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.text.Text;
@@ -205,6 +206,20 @@ public final class CodecUtil {
                 return builder.build(prefix);
             }
         };
+    }
+
+    public static <T extends Enum<T>> Codec<T> createEnumCodec(final Class<T> clazz) {
+        final Map<String, T> valueMap = new Object2ReferenceOpenHashMap<>();
+        for (final T t : clazz.getEnumConstants()) {
+            valueMap.put(t.name(), t);
+        }
+        return Codec.STRING.comapFlatMap(s -> {
+            final T t = valueMap.get(s);
+            if (t != null) {
+                return DataResult.success(t);
+            }
+            return DataResult.error("Tried to get enum constant " + s + " from enum " + clazz.getName());
+        }, Enum::name);
     }
 
     public interface DependentEncoder<L, R> {
