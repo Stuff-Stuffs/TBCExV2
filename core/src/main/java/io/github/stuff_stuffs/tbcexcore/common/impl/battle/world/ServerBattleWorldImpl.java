@@ -135,7 +135,7 @@ public class ServerBattleWorldImpl implements BattleWorld {
 
     public void tryJoin(final BattleParticipant participant, final BattleHandle handle) {
         final BattleImpl battle = getBattle(handle);
-        if (battle != null) {
+        if (battle != null && participant.tbcex$canJoinBattle()) {
             ((BattleTimelineImpl) battle.getTimeline()).push(new ParticipantJoinBattleAction(new BattleParticipantHandle(handle, ((Entity) participant).getUuid()), new BattleParticipantStateImpl(participant, participant.tbcex$getRestoreData(handle))), new Tracer<>(ActionTrace.TRACE, i -> false));
             if (participant instanceof ServerPlayerEntity entity) {
                 TBCExCore.setupPlayerToJoinBattle(entity, handle);

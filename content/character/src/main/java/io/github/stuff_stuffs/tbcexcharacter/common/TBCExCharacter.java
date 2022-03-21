@@ -1,8 +1,9 @@
 package io.github.stuff_stuffs.tbcexcharacter.common;
 
-import io.github.stuff_stuffs.tbcexcharacter.common.api.battle.CharacterBattleParticipantItemCategories;
-import io.github.stuff_stuffs.tbcexcharacter.common.api.battle.CharacterBattleParticipantStats;
+import io.github.stuff_stuffs.tbcexcharacter.common.api.battle.participant.CharacterBattleParticipantItemCategories;
+import io.github.stuff_stuffs.tbcexcharacter.common.api.battle.participant.CharacterBattleParticipantStats;
 import io.github.stuff_stuffs.tbcexcharacter.common.api.battle.participant.effect.CharacterBattleParticipantEffects;
+import io.github.stuff_stuffs.tbcexcharacter.common.api.battle.participant.race.BattleParticipantRaces;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 
@@ -14,6 +15,7 @@ public class TBCExCharacter implements ModInitializer {
         CharacterBattleParticipantStats.init();
         CharacterBattleParticipantItemCategories.init();
         CharacterBattleParticipantEffects.init();
+        BattleParticipantRaces.init();
     }
 
     public static Identifier createId(final String path) {

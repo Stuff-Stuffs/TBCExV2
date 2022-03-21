@@ -1,16 +1,17 @@
-package io.github.stuff_stuffs.tbcexcharacter.common.api.battle;
+package io.github.stuff_stuffs.tbcexcharacter.common.api.battle.participant;
 
 import io.github.stuff_stuffs.tbcexcharacter.common.TBCExCharacter;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.BattleParticipantStat;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.registry.Registry;
 
 public final class CharacterBattleParticipantStats {
-    public static final BattleParticipantStat VITALITY = new BattleParticipantStat();
-    public static final BattleParticipantStat INTELLIGENCE = new BattleParticipantStat();
-    public static final BattleParticipantStat DEXTERITY = new BattleParticipantStat();
-    public static final BattleParticipantStat WISDOM = new BattleParticipantStat();
-    public static final BattleParticipantStat STRENGTH = new BattleParticipantStat();
-    public static final BattleParticipantStat PERCEPTION = new BattleParticipantStat();
+    public static final BattleParticipantStat VITALITY = new BattleParticipantStat(new LiteralText("Vitality"), false, false);
+    public static final BattleParticipantStat INTELLIGENCE = new BattleParticipantStat(new LiteralText("Intelligence"), false, false);
+    public static final BattleParticipantStat DEXTERITY = new BattleParticipantStat(new LiteralText("Dexterity"), false, false);
+    public static final BattleParticipantStat WISDOM = new BattleParticipantStat(new LiteralText("Wisdom"), false, false);
+    public static final BattleParticipantStat STRENGTH = new BattleParticipantStat(new LiteralText("Strength"), false, false);
+    public static final BattleParticipantStat PERCEPTION = new BattleParticipantStat(new LiteralText("Perception"), false, false);
 
     public static void init() {
         final Registry<BattleParticipantStat> registry = io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.stat.BattleParticipantStats.REGISTRY;

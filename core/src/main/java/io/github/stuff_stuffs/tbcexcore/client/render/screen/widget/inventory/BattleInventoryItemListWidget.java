@@ -117,9 +117,7 @@ public class BattleInventoryItemListWidget {
         final int c = (r.isIn(mouseCursor.x, mouseCursor.y) || i == selected) ? Widget.HOVER.pack(255) : (i & 1) == 0 ? Widget.NON_HOVER.pack(192) : Widget.HOVER.pack(192);
         context.getEmitter().rectangle(0, 0, width, BUTTON_HEIGHT, c, c, c, c).renderMaterial(GuiRenderMaterial.POS_COLOUR_TRANSLUCENT).emit();
 
-        if (stack == null) {
-
-        } else {
+        if (stack != null) {
             final TextDrawer textDrawer = TextDrawers.oneShot(TextDrawers.HorizontalJustification.CENTER, TextDrawers.VerticalJustification.CENTER, Colour.WHITE.pack(), 0, false);
             context.pushTranslate(width / 3.0, BUTTON_HEIGHT / 2.0, 0.1);
             final Style style = Style.EMPTY.withColor(stack.getItem().getRarity().getRarityClass().getColour().pack(255));

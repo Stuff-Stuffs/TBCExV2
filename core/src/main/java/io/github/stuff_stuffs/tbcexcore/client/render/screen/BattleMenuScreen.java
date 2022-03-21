@@ -2,6 +2,7 @@ package io.github.stuff_stuffs.tbcexcore.client.render.screen;
 
 import io.github.stuff_stuffs.tbcexcore.client.render.screen.widget.inventory.BattleInventoryWidget;
 import io.github.stuff_stuffs.tbcexcore.client.render.screen.widget.move.BattleMoveWidget;
+import io.github.stuff_stuffs.tbcexcore.client.render.screen.widget.stats.BattleParticipantStatsWidget;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.Battle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleWorld;
@@ -36,7 +37,10 @@ public class BattleMenuScreen extends TBCExScreen implements MouseLockableScreen
         final SelectionWheelWidget menuSelector = SelectionWheelWidget.builder().addEntry(Widget.NON_HOVER, 192, Widget.HOVER, 192, () -> new LiteralText("Inventory"), List.of(new LiteralText("Open your inventory").asOrderedText()), () -> true, () -> {
             menuHolder.push(new BattleInventoryWidget(this::getInventory, this::close), new LiteralText("Inventory"));
         }).addEntry(Widget.NON_HOVER, 192, Widget.HOVER, 192, () -> new LiteralText("Self Stats"), List.of(new LiteralText("View Your Own Stats").asOrderedText()), () -> true, () -> {
-
+            final BattleParticipantStateView state = getState();
+            if (state != null) {
+                menuHolder.push(new BattleParticipantStatsWidget(state.getHandle(), entity.world), new LiteralText("Stats"));
+            }
         }).addEntry(Widget.NON_HOVER, 192, Widget.HOVER, 192, () -> new LiteralText("Stats"), List.of(new LiteralText("View Another Creature Or Your Own Stats").asOrderedText()), () -> true, () -> {
 
         }).addEntry(Widget.NON_HOVER, 192, Widget.HOVER, 192, () -> new LiteralText("Move"), List.of(new LiteralText("Move Around The Map ").asOrderedText()), () -> true, () -> {
@@ -91,7 +95,7 @@ public class BattleMenuScreen extends TBCExScreen implements MouseLockableScreen
         return participant.getInventory();
     }
 
-    private void setPassEvents(boolean val) {
+    private void setPassEvents(final boolean val) {
         passEvents = val;
     }
 

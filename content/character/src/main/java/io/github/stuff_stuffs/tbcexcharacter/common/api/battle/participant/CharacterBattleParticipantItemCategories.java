@@ -1,4 +1,4 @@
-package io.github.stuff_stuffs.tbcexcharacter.common.api.battle;
+package io.github.stuff_stuffs.tbcexcharacter.common.api.battle.participant;
 
 import io.github.stuff_stuffs.tbcexcharacter.common.TBCExCharacter;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.inventory.item.BattleParticipantItemCategory;

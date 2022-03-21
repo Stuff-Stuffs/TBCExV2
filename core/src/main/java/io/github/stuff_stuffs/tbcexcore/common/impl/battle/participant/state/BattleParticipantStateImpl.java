@@ -57,7 +57,7 @@ public class BattleParticipantStateImpl implements BattleParticipantState {
 
     public BattleParticipantStateImpl(final BattleParticipant participant, final RestoreData restoreData) {
         eventMap = new EventMapImpl();
-        effectContainer = new BattleParticipantEffectContainerImpl();
+        effectContainer = new BattleParticipantEffectContainerImpl(participant);
         statContainer = new BattleParticipantStatContainer();
         inventory = new BattleParticipantInventoryImpl(participant);
         healthContainer = new BattleParticipantHealthContainerImpl(participant);

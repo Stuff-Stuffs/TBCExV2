@@ -13,6 +13,7 @@ import net.minecraft.util.registry.RegistryEntry;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
 
 public final class BattleParticipantEffectType<View extends BattleParticipantEffect, Mut extends View> {
     private final Text name;
@@ -29,8 +30,8 @@ public final class BattleParticipantEffectType<View extends BattleParticipantEff
         reference = BattleParticipantEffectTypes.REGISTRY.createEntry(this);
     }
 
-    public <K> DataResult<Mut> decode(final DynamicOps<K> ops, final K val) {
-        return codec.parse(ops, val);
+    public <K> DataResult<BattleParticipantEffect> decode(final DynamicOps<K> ops, final K val) {
+        return codec.parse(ops, val).map(Function.identity());
     }
 
     public <K> DataResult<K> encode(final DynamicOps<K> ops, final BattleParticipantEffect effect) {
@@ -51,8 +52,8 @@ public final class BattleParticipantEffectType<View extends BattleParticipantEff
         return combiner.apply((Mut) first, (Mut) second);
     }
 
-    public Codec<Mut> getCodec() {
-        return codec;
+    public Codec<BattleParticipantEffect> getCodec() {
+        return codec.xmap(Function.identity(), t -> (Mut)t);
     }
 
     public Text getName() {
