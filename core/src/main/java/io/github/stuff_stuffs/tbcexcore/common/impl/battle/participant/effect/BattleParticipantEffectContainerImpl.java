@@ -7,7 +7,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.ActionTrace;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.BattleParticipant;
-import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.EffectedBattleParticipant;
+import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.BattleParticipantJoinEvent;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffect;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectContainer;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.effect.BattleParticipantEffectType;
@@ -17,6 +17,7 @@ import io.github.stuff_stuffs.tbcexutil.common.CodecUtil;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
 import io.github.stuff_stuffs.tbcexutil.common.Tracer;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
+import net.minecraft.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,12 +45,10 @@ public class BattleParticipantEffectContainerImpl implements BattleParticipantEf
 
     public BattleParticipantEffectContainerImpl(final BattleParticipant participant) {
         effects = new Reference2ObjectLinkedOpenHashMap<>();
-        if (participant instanceof EffectedBattleParticipant effected) {
-            effected.tbcex$addEffects(this::addEffectInternal);
-        }
+        BattleParticipantJoinEvent.EVENT.invoker().onJoinBattle((Entity & BattleParticipant) participant, this::addEffectInternal);
     }
 
-    private BattleParticipantEffectContainerImpl(final List<Pair<BattleParticipantEffectType<?, ?>, BattleParticipantEffect>> pairs, List<BattleParticipantEffect> internal) {
+    private BattleParticipantEffectContainerImpl(final List<Pair<BattleParticipantEffectType<?, ?>, BattleParticipantEffect>> pairs, final List<BattleParticipantEffect> internal) {
         effects = new Reference2ObjectLinkedOpenHashMap<>();
         for (final Pair<BattleParticipantEffectType<?, ?>, BattleParticipantEffect> pair : pairs) {
             effects.putAndMoveToLast(pair.getFirst(), pair.getSecond());
