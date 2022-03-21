@@ -46,11 +46,13 @@ public class ServerBattleWorldImpl implements BattleWorld {
     private final Long2ReferenceMap<BattleImpl> battles;
     private final Path directory;
     private final RegistryKey<World> worldKey;
+    private final World world;
     private final Path metaFile;
     private final CacheEvictionMap<BattleImpl> evictionMap;
     private long nextId;
 
-    public ServerBattleWorldImpl(final Path directory, final RegistryKey<World> worldKey) {
+    public ServerBattleWorldImpl(final Path directory, final RegistryKey<World> worldKey, World world) {
+        this.world = world;
         battles = new Long2ReferenceOpenHashMap<>();
         this.directory = directory;
         this.worldKey = worldKey;
@@ -146,7 +148,7 @@ public class ServerBattleWorldImpl implements BattleWorld {
     public BattleHandle create() {
         final BattleHandle handle = new BattleHandle(worldKey, nextId++);
         final BattleImpl battle = new BattleImpl();
-        battle.init(handle);
+        battle.init(handle, world);
         battles.put(handle.getId(), battle);
         evictionMap.put(handle.getId(), battle);
         return handle;
@@ -216,7 +218,7 @@ public class ServerBattleWorldImpl implements BattleWorld {
                     final Optional<BattleImpl> result = BattleImpl.CODEC.parse(NbtOps.INSTANCE, NbtIo.readCompressed(s).get("data")).result();
                     if (result.isPresent()) {
                         final BattleImpl battle = result.get();
-                        battle.init(handle);
+                        battle.init(handle, world);
                         battles.put(handle.getId(), battle);
                         evictionMap.put(handle.getId(), battle);
                         return battle;

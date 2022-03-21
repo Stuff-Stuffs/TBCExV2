@@ -25,7 +25,7 @@ public class MixinClientWorld implements BattleWorldHolder {
 
     @Inject(at = @At("RETURN"), method = "<init>")
     private void init(final ClientPlayNetworkHandler netHandler, final ClientWorld.Properties properties, final RegistryKey<World> registryRef, final RegistryEntry<DimensionType> registryEntry, final int loadDistance, final int simulationDistance, final Supplier<Profiler> profiler, final WorldRenderer worldRenderer, final boolean debugWorld, final long seed, final CallbackInfo ci) {
-        battleWorld = new ClientBattleWorldImpl(registryRef);
+        battleWorld = new ClientBattleWorldImpl(registryRef, (World) (Object) this);
     }
 
     @Inject(at = @At("RETURN"), method = "tick")

@@ -33,7 +33,7 @@ public class MixinServerWorld implements BattleWorldHolder {
     private void init(final MinecraftServer server, final Executor workerExecutor, final LevelStorage.Session session, final ServerWorldProperties properties, final RegistryKey<World> worldKey, final RegistryEntry<DimensionType> registryEntry, final WorldGenerationProgressListener worldGenerationProgressListener, final ChunkGenerator chunkGenerator, final boolean debugWorld, final long seed, final List<Spawner> spawners, final boolean shouldTickTime, final CallbackInfo ci) {
         final Path worldDirectory = session.getWorldDirectory(worldKey);
         final Path battleWorldDirectory = worldDirectory.resolve("tbcex_battle_world");
-        battleWorld = new ServerBattleWorldImpl(battleWorldDirectory, worldKey);
+        battleWorld = new ServerBattleWorldImpl(battleWorldDirectory, worldKey, (World) (Object) this);
     }
 
     @Inject(method = "tick(Ljava/util/function/BooleanSupplier;)V", at = @At("HEAD"))
@@ -42,7 +42,7 @@ public class MixinServerWorld implements BattleWorldHolder {
     }
 
     @Inject(method = "save", at = @At("HEAD"))
-    private void saveInject(ProgressListener progressListener, boolean flush, boolean savingDisabled, CallbackInfo ci) {
+    private void saveInject(final ProgressListener progressListener, final boolean flush, final boolean savingDisabled, final CallbackInfo ci) {
         battleWorld.save();
     }
 

@@ -8,6 +8,7 @@ import io.github.stuff_stuffs.tbcexcore.common.api.battle.action.BattleAction;
 import io.github.stuff_stuffs.tbcexcore.common.impl.battle.state.BattleStateImpl;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
 import io.github.stuff_stuffs.tbcexutil.common.Tracer;
+import net.minecraft.world.RegistryWorldView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 public class BattleTimelineImpl implements BattleTimeline {
     public static final Codec<BattleTimelineImpl> CODEC = Codec.list(BattleAction.CODEC).xmap(BattleTimelineImpl::new, battleTimeline -> battleTimeline.actions);
     private final List<BattleAction> actions;
+    private RegistryWorldView worldView;
     private BattleHandle handle;
     private boolean init = false;
     private BattleStateImpl state = new BattleStateImpl();
@@ -27,11 +29,12 @@ public class BattleTimelineImpl implements BattleTimeline {
         this.actions = new ArrayList<>(actions);
     }
 
-    public void init(final BattleHandle handle) {
+    public void init(final RegistryWorldView worldView, final BattleHandle handle) {
         if (!init) {
+            this.worldView = worldView;
             this.handle = handle;
             final Tracer<ActionTrace> tracer = new Tracer<>(ActionTrace.TRACE, i -> false);
-            state.init(handle, tracer);
+            state.init(worldView, handle, tracer);
             for (final BattleAction action : actions) {
                 action.apply(state, tracer);
             }
@@ -50,7 +53,7 @@ public class BattleTimelineImpl implements BattleTimeline {
             }
             state = new BattleStateImpl();
             final Tracer<ActionTrace> tracer = new Tracer<>(ActionTrace.TRACE, i -> false);
-            state.init(handle, tracer);
+            state.init(worldView, handle, tracer);
             for (final BattleAction action : actions) {
                 action.apply(state, tracer);
             }

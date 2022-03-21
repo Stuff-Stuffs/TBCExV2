@@ -4,6 +4,7 @@ import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.effect.BattleEffectContainerView;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.BattleParticipantStateView;
+import io.github.stuff_stuffs.tbcexcore.common.util.BattleShapeCache;
 import io.github.stuff_stuffs.tbcexutil.common.BattleBounds;
 import io.github.stuff_stuffs.tbcexutil.common.event.AbstractEvent;
 import io.github.stuff_stuffs.tbcexutil.common.event.EventKey;
@@ -12,6 +13,7 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Spliterator;
 import java.util.function.BiFunction;
 
 public interface BattleStateView {
@@ -32,6 +34,10 @@ public interface BattleStateView {
     BattleBounds getBounds();
 
     @Nullable BattleParticipantHandle getCurrentTurnParticipant();
+
+    Spliterator<BattleParticipantHandle> getSpliteratorParticipants();
+
+    BattleShapeCache getShapeCache();
 
     interface EventRegisterer {
         void register(EventInitializer initializer);

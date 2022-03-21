@@ -26,11 +26,13 @@ public class ClientBattleWorldImpl implements BattleWorld {
     private final Long2ReferenceMap<BattleImpl> battles;
     private final RegistryKey<World> worldKey;
     private final Set<BattleHandle> toRequest;
+    private final World world;
 
-    public ClientBattleWorldImpl(final RegistryKey<World> worldKey) {
+    public ClientBattleWorldImpl(final RegistryKey<World> worldKey, final World world) {
         this.worldKey = worldKey;
         battles = new Long2ReferenceOpenHashMap<>();
         toRequest = new ObjectOpenHashSet<>();
+        this.world = world;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class ClientBattleWorldImpl implements BattleWorld {
             LOGGER.error("Tried to get battle from wrong world!");
         } else {
             battles.put(handle.getId(), impl);
-            impl.init(handle);
+            impl.init(handle, world);
         }
     }
 
@@ -62,7 +64,7 @@ public class ClientBattleWorldImpl implements BattleWorld {
             }
             final BattleTimelineImpl timeline = (BattleTimelineImpl) battle.getTimeline();
             timeline.trim(size);
-            Tracer<ActionTrace> tracer = new Tracer<>(ActionTrace.TRACE, i -> false);
+            final Tracer<ActionTrace> tracer = new Tracer<>(ActionTrace.TRACE, i -> false);
             for (final BattleAction action : actions) {
                 timeline.push(action, tracer);
             }

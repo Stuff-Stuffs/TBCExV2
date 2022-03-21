@@ -11,6 +11,7 @@ import io.github.stuff_stuffs.tbcexcore.common.api.battle.participant.state.Batt
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.state.BattleState;
 import io.github.stuff_stuffs.tbcexcore.common.impl.battle.effect.BattleEffectContainerImpl;
 import io.github.stuff_stuffs.tbcexcore.common.impl.battle.participant.state.BattleParticipantStateImpl;
+import io.github.stuff_stuffs.tbcexcore.common.util.BattleShapeCache;
 import io.github.stuff_stuffs.tbcexutil.common.BattleBounds;
 import io.github.stuff_stuffs.tbcexutil.common.CodecUtil;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
@@ -18,9 +19,11 @@ import io.github.stuff_stuffs.tbcexutil.common.Tracer;
 import io.github.stuff_stuffs.tbcexutil.common.event.map.EventMapImpl;
 import io.github.stuff_stuffs.tbcexutil.common.event.map.MutEventMap;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceLinkedOpenHashMap;
+import net.minecraft.world.RegistryWorldView;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Spliterator;
 
 public class BattleStateImpl implements BattleState {
     public static final Codec<BattleStateImpl> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -32,6 +35,7 @@ public class BattleStateImpl implements BattleState {
     private final Object2ReferenceLinkedOpenHashMap<BattleParticipantHandle, BattleParticipantStateImpl> participantStateByHandle;
     private final BattleEffectContainerImpl effectContainer;
     private final TurnChooser turnChooser;
+    private BattleShapeCache shapeCache;
     private boolean init = false;
     private BattleBounds bounds = new BattleBounds(0, 0, 0, 0, 0, 0);
     private BattleHandle handle;
@@ -51,8 +55,9 @@ public class BattleStateImpl implements BattleState {
         this.turnChooser = turnChooser;
     }
 
-    public void init(final BattleHandle handle, final Tracer<ActionTrace> tracer) {
+    public void init(final RegistryWorldView worldView, final BattleHandle handle, final Tracer<ActionTrace> tracer) {
         if (!init) {
+            shapeCache = new BattleShapeCache(worldView, this);
             this.handle = handle;
             init = true;
             BattleState.BATTLE_EVENT_INIT.invoker().register(eventMap::register);
@@ -88,16 +93,41 @@ public class BattleStateImpl implements BattleState {
 
     @Override
     public BattleBounds getBounds() {
+        if (!init) {
+            throw new TBCExException("Attempted to access not initialized battle!");
+        }
         return bounds;
     }
 
     @Override
     public @Nullable BattleParticipantHandle getCurrentTurnParticipant() {
+        if (!init) {
+            throw new TBCExException("Attempted to access not initialized battle!");
+        }
         return turnChooser.getCurrent(participantStateByHandle.keySet(), participantStateByHandle::get);
     }
 
     @Override
+    public Spliterator<BattleParticipantHandle> getSpliteratorParticipants() {
+        if (!init) {
+            throw new TBCExException("Attempted to access not initialized battle!");
+        }
+        return participantStateByHandle.keySet().spliterator();
+    }
+
+    @Override
+    public BattleShapeCache getShapeCache() {
+        if (!init) {
+            throw new TBCExException("Attempted to access not initialized battle!");
+        }
+        return shapeCache;
+    }
+
+    @Override
     public boolean setBounds(final BattleBounds bounds, final Tracer<ActionTrace> tracer) {
+        if (!init) {
+            throw new TBCExException("Attempted to access not initialized battle!");
+        }
         if (!checkNewBounds(bounds)) {
             return false;
         }
@@ -141,6 +171,9 @@ public class BattleStateImpl implements BattleState {
 
     @Override
     public boolean advanceTurn(final Tracer<ActionTrace> tracer) {
+        if (!init) {
+            throw new TBCExException("Attempted to access not initialized battle!");
+        }
         if (participantStateByHandle.size() > 0) {
             final BattleParticipantHandle current = turnChooser.getCurrent(participantStateByHandle.keySet(), participantStateByHandle::get);
             return !turnChooser.advance(participantStateByHandle.keySet(), participantStateByHandle::get).equals(current);

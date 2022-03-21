@@ -6,6 +6,7 @@ import io.github.stuff_stuffs.tbcexcore.common.api.battle.Battle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleHandle;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.BattleTimelineView;
 import io.github.stuff_stuffs.tbcexcore.common.api.battle.state.BattleStateView;
+import net.minecraft.world.RegistryWorldView;
 
 public class BattleImpl implements Battle {
     public static final Codec<BattleImpl> CODEC = RecordCodecBuilder.create(instance -> instance.group(BattleTimelineImpl.CODEC.fieldOf("timeline").forGetter(battle -> battle.timeline)).apply(instance, BattleImpl::new));
@@ -19,8 +20,8 @@ public class BattleImpl implements Battle {
         this.timeline = timeline;
     }
 
-    public void init(final BattleHandle handle) {
-        timeline.init(handle);
+    public void init(final BattleHandle handle, final RegistryWorldView worldView) {
+        timeline.init(worldView, handle);
     }
 
     @Override
