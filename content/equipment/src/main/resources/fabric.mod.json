@@ -18,7 +18,15 @@
     ]
   },
   "mixins": [
+    "TBCExEquipment.mixins.json"
   ],
+  "custom": {
+    "loom:injected_interfaces": {
+      "net/minecraft/class_5423": [
+        "io/github/stuff_stuffs/tbcexequipment/common/api/EquipmentWorldView"
+      ]
+    }
+  },
   "depends": {
     "fabricloader": ">=0.11.3",
     "fabric": "*",

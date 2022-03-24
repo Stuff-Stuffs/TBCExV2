@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 
-public class BattleParticipantRace {
+public final class BattleParticipantRace {
     private final Text name;
     private final Function<BattleParticipant, Map<BattleParticipantStat, StatModifier>> statModifierGetter;
     private final EffectExtractor effectGetter;

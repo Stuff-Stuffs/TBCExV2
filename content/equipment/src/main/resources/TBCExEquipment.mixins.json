@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.stuff_stuffs.tbcexequipment.mixin.impl",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "MixinBuiltinRegistries",
+    "MixinChunkRegion",
+    "MixinDynamicRegistryManager",
+    "MixinMinecraftServer",
+    "MixinRegistryWorldView",
+    "MixinServerWorld"
+  ],
+  "client": [
+    "MixinClientWorld",
+    "MixinMinecraftClient"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
