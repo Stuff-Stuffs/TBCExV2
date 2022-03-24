@@ -9,8 +9,9 @@ import io.github.stuff_stuffs.tbcexequipment.common.material.MaterialManager;
 import io.github.stuff_stuffs.tbcexequipment.common.material.attribute.MaterialAttributeMap;
 import io.github.stuff_stuffs.tbcexequipment.common.material.attribute.MaterialAttributeTypes;
 import io.github.stuff_stuffs.tbcexequipment.common.material.attribute.MaterialAttributes;
-import io.github.stuff_stuffs.tbcexequipment.common.network.MaterialAttributeSyncSender;
-import io.github.stuff_stuffs.tbcexequipment.mixin.api.MaterialManagerHolder;
+import io.github.stuff_stuffs.tbcexequipment.common.network.EquipmentWorldSyncSender;
+import io.github.stuff_stuffs.tbcexequipment.common.part.EquipmentPartTypes;
+import io.github.stuff_stuffs.tbcexequipment.mixin.api.EquipmentWorldViewHolder;
 import io.github.stuff_stuffs.tbcexequipment.mixin.impl.MixinBuiltinRegistries;
 import io.github.stuff_stuffs.tbcexutil.common.TBCExException;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
@@ -40,9 +41,10 @@ public class TBCExEquipment implements ModInitializer {
     public void onInitialize() {
         MaterialAttributes.init();
         MaterialAttributeTypes.init();
+        EquipmentPartTypes.init();
         final SimpleRegistry<Material> materials = new SimpleRegistry<>(Material.REGISTRY_KEY, Lifecycle.stable(), null);
         Registry.register(MixinBuiltinRegistries.getRoot(), Material.REGISTRY_KEY.getValue(), materials);
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> MaterialAttributeSyncSender.sync(((MaterialManagerHolder) server).tbcex$getMaterialManager(), sender));
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> EquipmentWorldSyncSender.sync(((EquipmentWorldViewHolder) server).tbcex$getMaterialManager(), ((EquipmentWorldViewHolder) server).tbcex$getPartManager(), sender));
     }
 
     public static MaterialManager load(final ResourceManager manager, final DynamicRegistryManager registryManager) {
